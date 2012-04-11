@@ -1,0 +1,428 @@
+/*
+* Node
+* 
+* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
+package logic;
+
+import java.util.Vector;
+
+import java.lang.String;
+import exceptions.*;
+
+import java.util.Iterator;
+import messages.*;
+import stats.NodeStat;
+import utilities.Log;
+import enums.*;
+
+/*
+ * Istances of this class simulate the behaviour of real WSN member nodes.
+ * As the documentation provided said, the nodes know other nodes in range by default.It was not implemented any 
+ * algorithm to reach that objective.Neighbourhood is updated when adding a node to the system.
+ * Messages are simulated by method calls.In fact concurrency is not a big part of this class.The only real concurrent action 
+ * is the initiation of the simulation: the forwarding of a message are sequential actions and does not need open threads to
+ * have the message reach its destination.
+ * 
+ * */
+abstract public class Node extends Thread {
+	
+	//The position is not intended to be modified.
+	private final Position position;
+	
+	//every node has a life represented by its energy.
+	double energyPool;
+	
+	public synchronized Position position(){
+		return position;
+	} 
+	
+	//an id for the node.Clones are spotted checking these ids.
+	NodeID nid;
+	
+	//every node knows reachable nodes in their range.Must be sync externally.
+	public Vector<Node> neighbourhood;
+	
+	
+	//every node stores the ids they reiceve from other nodes and their position.
+	Vector<NodeInfo> storedNodes;
+	
+	
+	private class MessageBuffer{
+		//message buffer.
+		private Vector<Message> buffer;
+		
+		MessageBuffer(){
+			buffer=new Vector<Message>();
+		}
+		
+		public int size(){
+			return buffer.size();
+		}
+		
+		public String bufferStatus(){
+			if (size()!=0){return new String("Node "+ nid + " Buffer: "+ size() + "\n");}
+			else return new String();
+		}
+		
+		public synchronized void pushBuffer(Message m){
+			Thread t=currentThread();
+			Log.write("Thread "+ t.getName() +" is pushing " + info().toString(), "java.lang.Thread", "THREADSTATE");
+			Node n=(Node)t;
+			try{
+				buffer.add(m);
+				notifyAll();
+			}
+			finally{}
+		}
+		
+		public synchronized Message popBuffer(){
+			Thread t=currentThread();
+			Log.write("Thread "+ t.getName() +" is popping " + info().toString(), "java.lang.Thread", "THREADSTATE");
+			Node n=(Node)t;
+			try{
+				if (buffer.size()==0) {
+					Log.write("Node "+n.info().toString()+ " is waiting", "THREADSTATE", "VERBOSE");
+					wait();
+					Log.write("Node "+n.info().toString()+ " restarted", "THREADSTATE", "VERBOSE");
+				}
+				else {
+					notify();
+					return buffer.remove(0);
+				}
+			}
+			catch (InterruptedException e){}
+			return buffer.remove(0);
+		}
+	}
+	
+	MessageBuffer buffer;
+	
+	//private implementation of buffer
+	private void pushBuffer(Message m) throws BufferIsFull{
+		if (buffer.size()==NodeSettings.bufferSize) throw new BufferIsFull("This node doesnt have enough space to reiceve messages.");
+		else buffer.pushBuffer(m);
+	}
+	
+	//private implementation of buffer
+	private Message popBuffer() throws BufferIsEmpty{
+		if (buffer.size()==0) throw new BufferIsEmpty("This node buffer is empty.");
+		else {
+			Log.write("Node "+nid+" reiceved a message", "logic.Node", "VERBOSE");
+			Log.write("Node "+nid+" buffer size="+buffer.size(), "logic.Node", "VERBOSE");
+			return buffer.popBuffer();
+		}
+	}
+	
+	
+	//get wrapped node information
+	public NodeInfo info(){
+		return new NodeInfo(this);
+	}
+	
+	public String bufferStatus(){
+		return buffer.bufferStatus();
+	}
+	
+	//creates and returns cloned node in a different position.
+	abstract public Node clonedNode(Position p);
+	
+	//create new node with position.
+	public Node(Position p) throws NidOverflow{
+		turnoff();
+		setDaemon(true);
+		nid=new NodeID();
+		position=p;
+		stats=new NodeStat();
+		neighbourhood=new Vector<Node>();
+		buffer=new MessageBuffer();
+		energyPool=NodeSettings.defaultMaxEnergy;
+		storedNodes=new Vector<NodeInfo>();
+		Log.write("Node created", "logic.Node", "FINE");
+		setName(info().toString());
+	}
+	
+	//private implementation constructor to clone node.
+	protected Node(Position p, NodeID id){
+		turnoff();
+		setDaemon(true);
+		nid=id;
+		position=p;
+		stats=new NodeStat();
+		neighbourhood=new Vector<Node>();
+		buffer=new MessageBuffer();
+		energyPool=NodeSettings.defaultMaxEnergy;
+		storedNodes=new Vector<NodeInfo>();
+		Log.write("Node created", "logic.Node", "FINE");
+		setName(info().toString());
+	}
+	
+	//any finishing job before transmitting should be here.
+	public final void sendMessage(Message m){
+		try{
+			useEnergy(NodeSettings.transmitConsumption);
+			Ambient.sendMessage(m, this);
+			//update stats
+			stats.sent();
+		}
+		catch (NotEnoughEnergy e){
+			turnoff();
+			Log.write("Node "+nid+" has been turned off", "logic.Node", "HIGH");
+		}
+	}
+	
+	//forwarding of a message forecasts the change of the local destination.
+	public void forwardMessage(ControlMessage m) throws NoNeighboursAvailable, NoCloserDestinatary{
+	
+		try{
+			m.local_destination=neighbourForDestination(m.global_destination);
+			sendMessage(m);
+		}
+		catch(NoNeighboursAvailable e){
+			Log.write("Node "+nid+" doesnt have neighbours", "logic.Node", "HIGH");
+		}
+		catch (NoCloserDestinatary e){
+			Log.write("Node "+nid+" is the destination of a message", "logic.Node", "FINE");
+		}
+		
+	}
+	
+	//message goes in buffer
+	public void reiceveMessage(Message m){
+		Log.write("Node "+nid+" is reiceving a message", "logic.Node", "VERBOSE");
+		try{
+			useEnergy(NodeSettings.reiceveConsumption);
+			m.updatePath(this);
+			pushBuffer(m);
+			//update stats
+			stats.reiceved();
+		}
+		catch(BufferIsFull e){
+			Log.write("Node "+nid+" cannot reiceve: full buffer", "logic.Node", "HIGH");
+		}
+		catch (NotEnoughEnergy e){
+			Log.write("Node "+nid+" cannot reiceve: energy", "logic.Node", "HIGH");
+		}
+	}
+	
+	//subclass specialized method.
+	abstract protected void manageMessage(Message m) throws MessageNotSupportedByNode;
+	
+	//choice of neighbour based on the overall minimum distance from the destination.
+	private Position neighbourForDestination(Position m) throws NoNeighboursAvailable, NoCloserDestinatary{
+		if (neighbourhood.size()==0 || neighbourhood == null) throw new NoNeighboursAvailable("This node does not have neighbours at range");
+		Iterator<Node> i=neighbourhood.iterator();
+		double min_distance=Double.MAX_VALUE;
+		Position dest=null;
+		while(i.hasNext()){
+			Node n=i.next();
+			double d=m.distanceFrom(n.position);
+			if (min_distance>=d){
+				min_distance=d;
+				dest=n.position;
+			}
+		}
+		if (!dest.equals(this.position)){return dest;}
+		else{
+			throw new NoCloserDestinatary("Node failed to forward message because there are no closer nodes than himself.");
+		}
+	}
+
+	//this function will be used in subclasses.
+	protected void decodeSignature(NodeInfo n) throws NotEnoughEnergy, CloneHasBeenDetected{
+		useEnergy(NodeSettings.signatureConsumption);
+		stats.decoded();
+		Iterator<NodeInfo> i=storedNodes.iterator();
+		boolean toAdd=true;
+		
+		while(i.hasNext()){
+			NodeInfo ninfo=i.next();
+			if (ninfo.nid.equals(n.nid) ){
+				if (ninfo.position.equals(n.position)){
+					toAdd=false;
+				}
+				else{throw new CloneHasBeenDetected(ninfo.position, this);}
+			}
+		}
+		if (toAdd) {
+			storedNodes.add(n);
+			stats.stored();
+		}
+	}
+	
+	
+	//this method is used to use energy from the pool.
+	//WARN:It can be upgraded building another nested class.
+	private void useEnergy(double e) throws NotEnoughEnergy{
+		if (e>energyPool) throw new NotEnoughEnergy();
+		energyPool=energyPool-e;
+		stats.consumed(e);
+	}
+	
+	/*
+	 * 
+	 * Nodeinfo is just a wrapper class to make the storage of the information of a node easier.
+	 * 
+	 * */
+	public class NodeInfo{
+		//copied members
+		public NodeID nid;
+		public Position position;
+		//one constructor
+		NodeInfo(Node n){
+			nid=n.nid;
+			position=n.position;
+		}
+		
+		public String toString(){
+			return "id: "+nid+" pos: "+ position+" ";
+		}
+	}
+	
+	
+	//switch off node
+	public void turnoff(){
+		interrupt();
+	}
+	
+	//switch on node
+	public void turnon(){
+		start();
+	}
+	
+	public void pause(){
+		paused=true;
+	}
+	
+	public void unpause(){
+		paused=false;
+		paused.notify();
+	}
+	
+	
+	Boolean paused=new Boolean(false);
+	
+	//simulation stats
+	NodeStat stats;
+	
+<<<<<<< HEAD
+	private void listen(){
+		synchronized(buffer){
+			try{
+				Message m=popBuffer();//qui entra in wait
+=======
+	private static int simulationSpeed=1500;
+	
+	public enum SimSpeed{
+		VERY_LOW,LOW,MID,DISCRETE,QUICK,HIGH,VERY_HIGH,ULTRA,INSTANT
+	}
+	
+	public static void setSimulationSpeed(SimSpeed speed){
+		switch (speed){
+		case VERY_LOW:
+			simulationSpeed=3000;
+			break;
+		case LOW:
+			simulationSpeed=2000;
+			break;
+		case MID:
+			simulationSpeed=1500;
+			break;
+		case DISCRETE:
+			simulationSpeed=1000;
+			break;
+		case QUICK:
+			simulationSpeed=700;
+			break;
+		case HIGH:
+			simulationSpeed=500;
+			break;
+		case VERY_HIGH:
+			simulationSpeed=300;
+			break;
+		case ULTRA:
+			simulationSpeed=100;
+			break;
+		case INSTANT:
+			simulationSpeed=0;
+			break;
+		}
+	}
+	
+	private void listen(){
+		synchronized(buffer){
+			try{
+				sleep(simulationSpeed);
+				//things to do while listening.
+				while (state()==status.PAUSED){
+					Log.write("Node "+nid+" is paused", "logic.Node", "VERBOSE");
+					sleep(simulationSpeed);
+				}
+				Message m=popBuffer();
+				actionPerformed();
+>>>>>>> a6786961897c40582a59c125c894f4756f6d4296
+				Log.write("Node "+nid+" is managing message", "logic.Node", "VERBOSE");
+				manageMessage(m);
+			}
+			catch (BufferIsEmpty e){
+				try {
+					Node n=(Node)Thread.currentThread();
+					Log.write("Node "+n.nid +" is waiting", "logic.Node", "THREADSTATE");
+					Hypervisor.notifyIdle();
+					buffer.wait();
+					Log.write("Node "+n.nid +" is awake", "logic.Node", "THREADSTATE");
+					Hypervisor.notifySimulating();
+				} 
+				catch (InterruptedException e1) {Log.write("Node "+nid +" was interrupted", "logic.Node", "CRITICAL");}
+				//Log.write("Node "+nid+" buffer is empty", "logic.Node", "VERBOSE");
+			}
+			catch (MessageNotSupportedByNode e){Log.write("Node "+nid+" reiceved a not supported message", "logic.Node", "HIGH");}
+			/*catch (InterruptedException e){
+				Log.write("Node "+nid+" was interrupted", "logic.Node", "CRITICAL");
+			}*/
+			finally{
+				
+			}
+		}
+	}
+	
+	
+	
+	/*
+	 * this function is core activity of the node.A node listens to incoming messages.When status changes to simulating a
+	 * location claim is sent.Then the node restarts listening to incoming messages.
+	 * 
+	 * */
+	public void run(){
+		sendMessage(new LocationClaim(this));
+		
+		while (true){
+			if (!paused) listen();
+			else {
+				try {
+					Log.write("Node "+ nid + " is paused", "logic.Node", "FINE");
+					paused.wait();
+				} 
+				catch (InterruptedException e) {
+					Log.write("Node "+nid +" was interrupted", "logic.Node", "CRITICAL");
+				}
+			}
+		}
+	}
+	
+	
+	//util methods
+	public String toString(){
+		String s= "|***|\nNODE "+info()+"\n NEIGHBOURHOOD:\n";
+		Iterator<Node> i=neighbourhood.iterator();
+		while(i.hasNext()){
+			s+="\t"+i.next().info()+"\n";
+		}
+		s+="\n";
+		return s;
+	}
+		
+}

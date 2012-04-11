@@ -1,0 +1,242 @@
+/*
+* Hypervisor
+* 
+* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
+package logic;
+import exceptions.*;
+
+import java.util.Random;
+
+import utilities.Log;
+import enums.*;
+/*
+ * This class is responsible for the managing of the simulation.It creates and starts the nodes as it is required in the
+ * configuration file.
+ * In order to work it other modules of the software must set up static variables of this class calling the setup method.
+ * This class approaches the problem with a singleton pattern and its methods are publicly available.
+ * 
+ * */
+import gui.AmbientPanel;
+import gui.ControlPanel;
+<<<<<<< HEAD
+import gui.UserInterface;
+=======
+import parser.*;
+>>>>>>> 2c133fa0e3815237fb8c54e580d257f391cc77a7
+
+
+public class Hypervisor extends Thread{
+/***CLASS MEMBERS***/
+	//Simulation's protocol
+		public static SupportedProtocol protocol;
+		//number of simulations to be run
+		private static int simulationNumber;
+		//current simulation running
+		private static int currentSimulation;
+		//number of nodes to be created
+		private static int numberOfNodes;
+		//check wether the simulation is finished
+		static int idleNodes=0;
+		//time to wait with idle status of all node to make sure the simulation is finished.
+		static int simulationTerminationDelay=500;
+/***INSTANCE MEMBERS***/
+	
+/***CONSTRUCTORS***/
+	Hypervisor(){}
+/***CLASS METHODS***/
+	// singleton implementation
+	static Hypervisor singleton=null;
+	
+	static Hypervisor hypervisor(){
+		if (singleton==null) singleton=new Hypervisor();
+		return singleton;
+	}
+/***INSTANCE METHODS***/
+	
+	//public static void setup(SupportedProtocol p, int nsim, int node_n) throws TooManyNodes{
+	public static void setup() throws TooManyNodes{
+		Log.write("Hypervisor setup started", "logic.Hypervisor", "FINE");
+		/*
+		DEBUG SETUP
+		NodeSettings.defaultMaxEnergy=32000;
+		NodeSettings.reiceveConsumption=10;
+		NodeSettings.transmitConsumption=20;
+		NodeSettings.signatureConsumption=50;
+		NodeSettings.numberOfForwards=2;
+		NodeSettings.bufferSize=150;
+		NodeSettings.transmissionRange=0.1;
+		NodeSettings.claimForwardProbability=0.1;
+		END DEBUG
+		*/
+		//clear settings
+		if(NodeSettings.protocol=="RED")
+		protocol=SupportedProtocol.RED;
+		else
+		protocol=SupportedProtocol.LSM;
+		
+		
+		numberOfNodes=NodeSettings.numberOfNodes;
+		simulationNumber=NodeSettings.simulationNumber;
+		
+		
+		currentSimulation=0;
+		//
+		/*END DEBUG*/
+		Log.write("Additional protocol setup..", "logic.Hypervisor", "FINE");
+		//eventual additional protocol settings
+		switch (protocol){
+		case RED:
+			Random generator=new Random();
+			REDNode.randomNumber=generator.nextInt(10000);
+			break;
+		case LSM:
+			break;
+		}
+	}
+	
+	private static void createNodes() throws TooManyNodes{
+		//some errors may occour in creating random nodes.if that is the case the operation is repeated.
+		Log.write("Creating nodes..", "logic.Hypervisor", "FINE");
+		for (int i=0;i<numberOfNodes;i++){
+			creation:
+			try {
+				 Ambient.addNode(NodeFactory.buildNode(protocol, Position.random()));
+			} catch (PositionNotAvailable e) {
+				break creation;
+			} catch (NidOverflow e) {
+				throw new TooManyNodes("Hypervisor cannot manage that number of nodes.");
+			}
+		}
+		
+		/*DEBUG*/
+		try{
+			Ambient.addCloned();
+		}
+		catch (NoNodesAvailable e){}
+	}
+	
+	
+	
+	
+	public static void runSimulation(){
+		hypervisor().start();
+	}
+	
+	
+<<<<<<< HEAD
+	public static void notifyIdle(Node idleNode){
+		if (false==hypervisor().simulationChecker.isAlive()) {hypervisor().simulationChecker.start();}
+		UserInterface.setIdleNode(idleNode);
+		synchronized(idleMonitor){
+=======
+	public static void notifyIdle(){
+		synchronized(hypervisor()){
+>>>>>>> 2c133fa0e3815237fb8c54e580d257f391cc77a7
+			idleNodes++;
+			idleNodes.notifyAll();
+		}
+		Log.write(idleNodes+ " Nodes out of "+numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
+	}
+	
+	private static Object idleMonitor=new Object();
+	
+	private Thread simulationChecker=new Thread(){
+		
+		{
+			setDaemon(true);
+		}
+		public void run(){
+			while (true){
+				synchronized(idleMonitor){
+					try{
+						if (idleNodes >= numberOfNodes) {
+							Log.write("1ST");
+							idleNodes.wait(simulationTerminationDelay);
+							if (idleNodes >= numberOfNodes){
+								Log.write("OK");
+								hypervisor().notify();
+								interrupt();
+							}
+						}
+						else{
+							Log.write("WAITING");
+							idleNodes.wait(2000);
+						}
+					} catch (InterruptedException e){}
+				}
+			}
+		}
+	}; 
+	
+<<<<<<< HEAD
+	public static void notifySimulating(Node simulatingNode){
+		if (false==hypervisor().simulationChecker.isAlive()) {hypervisor().simulationChecker.start();}
+		UserInterface.setIdleNode(simulatingNode);
+		synchronized(idleMonitor){
+=======
+	public static void notifySimulating(){
+		synchronized(hypervisor()){
+>>>>>>> 2c133fa0e3815237fb8c54e580d257f391cc77a7
+			idleNodes--;
+			idleNodes.notify();
+		}
+		Node n=(Node)Thread.currentThread();
+		Log.write("Node "+n.nid+" is idle", "logic.Hypervisor", "VERBOSE");
+		Log.write(idleNodes+ " Nodes out of "+numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
+	}
+	
+	public static void notifyClone(Position p){
+		try {
+			Log.write("A clone has been found", "logic.Hypervisor", "HIGH");
+			AmbientPanel.setClonedNode(p);
+			
+		} catch (GraphicalNodeDoesntExists e) {
+			Log.write("It wasn't possible to find a graphical node to set as attacked", "logic.Ambient", "CRITICAL");
+		}
+	}
+	
+	/*COMPLETARE.*/
+	public void run(){
+		/*debug*/
+		try {
+			//setup(SupportedProtocol.LSM, 1, 100);
+			setup();
+		} 
+		catch (TooManyNodes e) {}
+		/*debug*/
+		for (currentSimulation=0;currentSimulation<simulationNumber;currentSimulation++){
+			synchronized(this){
+				try{
+					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FINE");
+					resetForNewSimulation();
+					Ambient.start();
+					Log.write("TEST");
+					this.wait();
+					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FINE");
+					collectAndDeliver();
+					Ambient.kill();
+				}
+				catch (InterruptedException e){}
+				
+			}
+		}
+	}
+
+	private void collectAndDeliver(){
+		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
+	}
+	
+	private void resetForNewSimulation(){
+		try{
+			Log.write("Preparing for new simulation.." ,"logic.Hypervisor","VERBOSE");
+			Ambient.clear();
+			createNodes();
+		}
+		catch (TooManyNodes e){}
+		
+	}
+}

@@ -41,8 +41,10 @@ public class Hypervisor extends Thread{
 		static int simulationTerminationDelay=500;
 		
 		public boolean stopsAfterCompletingEverySimulation=false;
+
 /***INSTANCE MEMBERS***/
 		private long waitForDeadNodeTime=500;
+		private Boolean paused = new Boolean(false);
 	
 /***CONSTRUCTORS***/
 	Hypervisor(){}
@@ -102,8 +104,6 @@ public class Hypervisor extends Thread{
 	public static void runSimulation(){
 		hypervisor().start();
 	}
-	
-	
 	public static void notifyIdle(Node idleNode){
 		idleNode.isIdle=true;
 		synchronized(simulationChecker){
@@ -198,11 +198,13 @@ public class Hypervisor extends Thread{
 		for (currentSimulation=0;currentSimulation<Settings.numberOfSimulations;currentSimulation++){
 			synchronized(this){
 				try{
+					pauseFlag();
 					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FINE");
 					UserInterface.notifyStartOfSimulation(currentSimulation);
 					resetForNewSimulation();
 					Ambient.start();
 					this.wait();
+					pauseFlag();
 					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FINE");
 					Ambient.kill();
 					sleep(waitForDeadNodeTime);
@@ -211,6 +213,7 @@ public class Hypervisor extends Thread{
 						Log.write("Hypervisor must be notified to start the next simulation", "logic.Hypervisor", "HIGH");
 						this.wait();
 					}
+					pauseFlag();
 					collectAndDeliver();
 				}
 				catch (InterruptedException e){
@@ -224,14 +227,27 @@ public class Hypervisor extends Thread{
 		}
 	}
 
+	private static void pauseFlag(){
+		if (hypervisor().paused) {
+			synchronized(hypervisor().paused){
+				try {
+					hypervisor().paused.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	private void collectAndDeliver() throws NoNodesAvailable{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
 		simulationStatistics.cloneWasFound=cloneWasFound;
 		Log.write(simulationStatistics.toString());
 		cloneWasFound=false;
 		try{
-		RemoteSimData ref=(RemoteSimData) Naming.lookup("rmi://localhost/RemoteSimData");
+		RemoteSimData ref=(RemoteSimData) Naming.lookup("rmi://"+Settings.server+"/RemoteSimData");
 		//ref.pushData(simulationStatistics);
+		
 		ref.pushData(simulationStatistics.toString());
 		}
 		catch(Exception e){
@@ -256,5 +272,17 @@ public class Hypervisor extends Thread{
 		}
 		catch (TooManyNodes e){}
 		
+	}
+	public static void pause() {
+		synchronized(hypervisor().paused){
+			hypervisor().paused = true;
+		}
+	}
+	
+	public static void unpause(){
+		synchronized(hypervisor().paused){
+			hypervisor().paused = false;
+			hypervisor().paused.notify();
+		}
 	}
 }

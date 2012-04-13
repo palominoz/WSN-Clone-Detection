@@ -21,7 +21,7 @@ public class SimDataImpl extends UnicastRemoteObject implements RemoteSimData{
 	
 	
 	public void pushData(String simulationStatistics) throws RemoteException{
-		
+		ServerPanel.pushStats(simulationStatistics);
 	}
 	
 

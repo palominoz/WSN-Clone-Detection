@@ -20,6 +20,7 @@ import utilities.Log;
 import enums.*;
 import gui.UserInterface;
 
+
 /*
  * Istances of this class simulate the behaviour of real WSN member nodes.
  * As the documentation provided said, the nodes know other nodes in range by default.It was not implemented any 
@@ -29,7 +30,7 @@ import gui.UserInterface;
  * have the message reach its destination.
  * 
  * */
-abstract public class Node extends Thread {
+abstract public class Node extends Thread{
 	
 	//The position is not intended to be modified.
 	private final Position position;
@@ -328,7 +329,6 @@ abstract public class Node extends Thread {
 				}
 				else {
 					Log.write("Node "+ nid + " is paused", "logic.Node", "BUG");
-					
 					synchronized(monitor){
 						monitor.wait();
 					}

@@ -81,13 +81,19 @@ public class UserInterface {
 	}
 
 	public static void notifyEndOfSimulation(Integer indexOfSimulation) {
-		ControlPanel.setOverallStatusText("Simulation number "+indexOfSimulation+" has ended.");
+		ControlPanel.notifyEndOfSimulation(indexOfSimulation);
 	}
 	
 	public static void notifyStartOfSimulation(Integer indexOfSimulation) {
-		ControlPanel.setOverallStatusText("Simulation number "+indexOfSimulation+"...");
+		ControlPanel.notifyStartOfSimulation(indexOfSimulation);
 	}
 	
+	public static void showError(String text){
+		JOptionPane.showMessageDialog(null,
+			    text,
+			    "Error",
+			    JOptionPane.ERROR_MESSAGE);
+	}
 
 	public static void setDeadNode(Node node) {
 		try {

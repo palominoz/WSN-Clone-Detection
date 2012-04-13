@@ -9,11 +9,11 @@ import gui.*;
 
 public class RmiServer{
 	
-	private static final String HOST="localhost";//server adress
+	private static final String HOST="localhost";//server address
 	
 	public static void main(String[] args) throws Exception{
 		ServerPanel.setVisibity(true);
-		String rmiObjName= "rmi://"+HOST+"/RemoteSimData";//adress RemoteObj
+		String rmiObjName= "rmi://"+HOST+"/RemoteSimData";//address RemoteObj
 		try{
 			//System.setSecurityManager(new java.rmi.RMISecurityManager());
 			System.setProperty("java.security.policy", "rmi.policy");

@@ -8,6 +8,7 @@ import utilities.Log;
 
 import exceptions.GraphicalNodeDoesntExists;
 import exceptions.NodeNotFound;
+import exceptions.WrongUrlPanel;
 
 import logic.Ambient;
 import logic.Hypervisor;
@@ -30,10 +31,19 @@ public class Listener implements ActionListener {
 		if ("start".equals(e.getActionCommand())){
 			if(Settings.areReady()) Hypervisor.runSimulation();
 			else{
-				URLPanel.showModalPanel();
+				try {
+					URLPanel.showModalPanel("settings");
+				} catch (WrongUrlPanel e1) {
+					e1.printStackTrace();
+				}
 			}
 		}
-		
+		if ("stop".equals(e.getActionCommand())){
+			synchronized(Hypervisor.hypervisor()){
+				//Hypervisor.hypervisor().stop();
+				System.exit(0);
+			}
+		}
 		if ("next".equals(e.getActionCommand())){
 			synchronized(Hypervisor.hypervisor()){
 				Hypervisor.hypervisor().notify();
@@ -43,16 +53,31 @@ public class Listener implements ActionListener {
 			Ambient.pause();
 			ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
 			ControlPanel.controlPanel().pauseButton.setText("Unpause");
+			ControlPanel.notifyPause();
+		}
+		
+		if ("lookup".equals(e.getActionCommand())){
+			try {
+				URLPanel.showModalPanel("server");
+			} catch (WrongUrlPanel e1) {
+				e1.printStackTrace();
+			}
 		}
 		
 		if ("unpause".equals(e.getActionCommand())){
 			Ambient.unpause();
 			ControlPanel.controlPanel().pauseButton.setActionCommand("pause");
 			ControlPanel.controlPanel().pauseButton.setText("Pause");
+			ControlPanel.notifyUnpause();
 		}
 		
 		if ("fetch".equals(e.getActionCommand())){
-			URLPanel.showModalPanel();
+			try {
+				URLPanel.showModalPanel("settings");
+			} catch (WrongUrlPanel e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 		
 		if ("showAllMessages".equals(e.getActionCommand())){

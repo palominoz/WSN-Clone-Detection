@@ -186,6 +186,7 @@ public class Ambient {
 				i.next().pause();
 			}	
 		}
+		Hypervisor.pause();
 	}
 	
 	public static void unpause(){
@@ -196,6 +197,7 @@ public class Ambient {
 				i.next().unpause();
 			}	
 		}
+		Hypervisor.unpause();
 	}
 	
 	

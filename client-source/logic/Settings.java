@@ -9,6 +9,10 @@
 
 package logic;
 
+import java.rmi.Naming;
+
+import utilities.Log;
+
 import enums.SupportedProtocol;
 
 
@@ -18,6 +22,16 @@ import enums.SupportedProtocol;
  * */
 public class Settings {
 	
+	private static boolean serverIsValid(){
+		try{
+			Naming.lookup("rmi://"+server+"/RemoteSimData");
+		}
+		catch (Exception e){
+			return false;
+		}
+		return true;
+	}
+	public static String server = "localhost";
 	
 	public static SupportedProtocol protocol=SupportedProtocol.NONE;
 	
@@ -50,6 +64,29 @@ public class Settings {
 	//public static int status_change_delay;
 	
 	
+	public static String status(){
+		String status = new String("<html>");
+		if (server.equals("") || server == null){
+			status += "RMI server is missing<br />";
+		}
+		if (serverIsValid() == false){
+			status += "RMI server is not valid<br />";
+		}
+		
+		if (areReady() == false){
+			status += "Some settings are missing/not valid<br />";
+		}
+		
+		if (status.equals("<html>")){
+			status = "<html><font color='green'>Ready</font></html>";
+		}
+		
+		status += "</html>";
+		
+		
+		return status;
+	}
+	
 	public static boolean areReady(){
 		return
 			numberOfNodes			>0 &&
@@ -61,7 +98,8 @@ public class Settings {
 			receiveConsumption		>=0 &&
 			signatureConsumption	>=0 &&
 			numberOfForwards		>=0 &&
-			bufferSize				>0;
+			bufferSize				>0 &&
+			serverIsValid();
 		
 	}	
 	

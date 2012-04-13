@@ -47,10 +47,13 @@ public class ServerPanel extends JFrame implements ActionListener{
 		
 	}
 	
-	
+	private void update(){
+		resultsTextArea.setText(statistics.lastElement());
+	}
 	
 	public static void pushStats(String stats){
 		serverPanel().statistics.add(stats);
+		singleton.update();
 	}
 	
 	

@@ -15,11 +15,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import logic.Settings;
+
 public class ControlPanel extends JFrame{
 	private static ControlPanel singleton=null;
 	
 	public static ControlPanel controlPanel(){
-		if (singleton==null) singleton=new ControlPanel();
+		if (singleton==null) {
+			singleton=new ControlPanel();
+			update();
+		}
 		return singleton;
 	}
 	
@@ -27,16 +32,19 @@ public class ControlPanel extends JFrame{
 	private JButton nextButton = new JButton("Next");
 	private JButton stopButton =  new JButton("Stop");
 	public JButton pauseButton = new JButton("Pause");
-	private JButton	fetchButton = new JButton("Fetch");
+	private JButton	fetchButton = new JButton("Fetch Settings");
+	private JButton lookupServerButton = new JButton("Lookup Server");
 	private JButton showAllMessagesButton = new JButton("Paths");
 	private JButton showRangesButton = new JButton("Ranges");
 	private JButton showIDsButton = new JButton("IDs");
 	private JButton showIdlesButton = new JButton("Idles");
 	private JButton highlightNodeButton = new JButton("Highlight");
 	
+	
 	public JComboBox IDsCombo=new JComboBox();
 	
-	public JLabel overallStatusLabel=new JLabel("Waiting for the settings file");
+	public JLabel statusLabel=new JLabel(Settings.status());
+
 	
 	ControlPanel(){
 		//init
@@ -49,6 +57,7 @@ public class ControlPanel extends JFrame{
 		stopButton.setActionCommand("stop");
 		pauseButton.setActionCommand("pause");
 		fetchButton.setActionCommand("fetch");
+		lookupServerButton.setActionCommand("lookup");
 		highlightNodeButton.setActionCommand("highlightNode");
 		
 		
@@ -68,6 +77,9 @@ public class ControlPanel extends JFrame{
 		stopButton.addActionListener(Listener.listener());
 		pauseButton.addActionListener(Listener.listener());
 		fetchButton.addActionListener(Listener.listener());
+		lookupServerButton.addActionListener(Listener.listener());
+		
+		
 		//GUI group
 		showAllMessagesButton.addActionListener(Listener.listener());
 		showRangesButton.addActionListener(Listener.listener());
@@ -75,6 +87,12 @@ public class ControlPanel extends JFrame{
 		highlightNodeButton.addActionListener(Listener.listener());
 		IDsCombo.addActionListener(Listener.listener());
 		showIdlesButton.addActionListener(Listener.listener());
+		
+		//Commands creation
+		JPanel statusGroup=new JPanel(new GridLayout(2,1));
+		statusGroup.setBorder(BorderFactory.createTitledBorder("Status"));
+		statusGroup.add(statusLabel);
+		
 		
 		
 		//Commands creation
@@ -85,6 +103,7 @@ public class ControlPanel extends JFrame{
 		buttonGroup.add(stopButton);
 		buttonGroup.add(pauseButton);
 		buttonGroup.add(fetchButton);
+		buttonGroup.add(lookupServerButton);
 		
 		//GUI group creation
 		JPanel guiGroup=new JPanel(new GridLayout(2,3));
@@ -99,21 +118,71 @@ public class ControlPanel extends JFrame{
 		//Status creation
 		JPanel simulationStatus=new JPanel(new GridLayout(1,1));
 		simulationStatus.setBorder(BorderFactory.createTitledBorder("Simulation status"));
-		simulationStatus.add(overallStatusLabel);
 		
 		//composition
-		content.add(buttonGroup, BorderLayout.NORTH);
-		content.add(guiGroup, BorderLayout.CENTER);
-		content.add(simulationStatus, BorderLayout.SOUTH);
+		content.add(statusGroup, BorderLayout.NORTH);
+		content.add(buttonGroup, BorderLayout.CENTER);
+		content.add(guiGroup, BorderLayout.SOUTH);
 		
 		//settings
 		setSize(400,240);
 		setVisible(true);
 	}
 	
-	public static void setOverallStatusText(String s){
-		controlPanel().overallStatusLabel.setText(s);
+	public static void notifyEndOfSimulation(Integer index) {
+		controlPanel().pauseButton.setEnabled(false);
+		
+		controlPanel().statusLabel.setText("<html><font color='green'>Sending stats .. </font></html>");
+		controlPanel().showAllMessagesButton.setEnabled(false);
+		controlPanel().showRangesButton.setEnabled(false);
+		controlPanel().showIDsButton.setEnabled(false);
+		controlPanel().showIdlesButton.setEnabled(false);
+		controlPanel().IDsCombo.setEnabled(false);
+		controlPanel().highlightNodeButton.setEnabled(false);
+	}
+	
+	public static void notifyPause(){
+		controlPanel().statusLabel.setText("<html><font color='yellow'>Paused</font></html>");
+	}
+	
+	public static void notifyUnpause(){
+		controlPanel().statusLabel.setText("<html><font color='green'>Running</font></html>");
 	}
 	
 	
+	public static void notifyStartOfSimulation(Integer index) {
+		controlPanel().pauseButton.setEnabled(true);
+		
+		controlPanel().statusLabel.setText("<html><font color='green'>Running simulation " + index + "</font></html>");
+		controlPanel().showAllMessagesButton.setEnabled(true);
+		controlPanel().showRangesButton.setEnabled(true);
+		controlPanel().showIDsButton.setEnabled(true);
+		controlPanel().showIdlesButton.setEnabled(true);
+		controlPanel().IDsCombo.setEnabled(true);
+		controlPanel().highlightNodeButton.setEnabled(true);
+	}
+	
+	public static void update(){
+		singleton.statusLabel.setText(Settings.status());
+		if (Settings.areReady() == false){
+			controlPanel().startButton.setEnabled(false);
+			controlPanel().stopButton.setEnabled(false);
+			controlPanel().pauseButton.setEnabled(false);
+			controlPanel().nextButton.setEnabled(false);
+			
+			controlPanel().showAllMessagesButton.setEnabled(false);
+			controlPanel().showRangesButton.setEnabled(false);
+			controlPanel().showIDsButton.setEnabled(false);
+			controlPanel().showIdlesButton.setEnabled(false);
+			controlPanel().IDsCombo.setEnabled(false);
+			controlPanel().highlightNodeButton.setEnabled(false);
+			
+		}
+		else{
+			controlPanel().startButton.setEnabled(true);
+			controlPanel().stopButton.setEnabled(true);
+			controlPanel().pauseButton.setEnabled(true);
+			controlPanel().nextButton.setEnabled(true);
+		}
+	}
 }

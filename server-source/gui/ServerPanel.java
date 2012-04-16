@@ -17,17 +17,15 @@ public class ServerPanel extends JFrame implements ActionListener{
 	public static void setVisibity(boolean b){serverPanel().setVisible(b);}
 	
 
-	private static JTextArea resultsTextArea = new JTextArea("SIMULATION RESULTS:");
+	private static JTextArea resultsTextArea = new JTextArea();
 
 	private JComboBox simulationsCombo=new JComboBox();
 	
-	private Vector<String> statistics=new Vector<String>();
+	private String statistics=new String();
 	
 	
 	public void actionPerformed(ActionEvent event){
-		if ("selected".equals(event.getActionCommand())){
-			resultsTextArea.setText(statistics.elementAt(simulationsCombo.getSelectedIndex()));
-		}
+		
 	}
 	
 	private ServerPanel(){
@@ -48,11 +46,12 @@ public class ServerPanel extends JFrame implements ActionListener{
 	}
 	
 	private void update(){
-		resultsTextArea.setText(statistics.lastElement());
+		resultsTextArea.setText(statistics);
 	}
 	
 	public static void pushStats(String stats){
-		serverPanel().statistics.add(stats);
+		if (!stats.equals("\n"))  serverPanel().statistics += stats + " ";
+		else serverPanel().statistics += stats;
 		singleton.update();
 	}
 	

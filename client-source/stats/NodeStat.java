@@ -16,6 +16,8 @@ public class NodeStat {
 	int messages;
 	int signatures;
 	
+	boolean foundClone = false;
+	
 	public NodeStat(){}
 	
 	public void reiceved(){
@@ -32,5 +34,8 @@ public class NodeStat {
 	}
 	public void decoded(){
 		signatures++;
+	}
+	public void foundClone(){
+		foundClone = true;
 	}
 }

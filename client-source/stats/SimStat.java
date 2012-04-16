@@ -14,7 +14,7 @@ import exceptions.*;
 public class SimStat {
 	
 	public enum ValueType{
-		SENT, REICEVED, SIGNATURES, ENERGY, STORED
+		SENT, RECEIVED, SIGNATURES, ENERGY, STORED
 	}
 	
 	Vector<NodeStat> nodesStats;
@@ -26,38 +26,51 @@ public class SimStat {
 	public String toString(){
 		try{
 			return	"MIN Sent Messages:"		+minimum(SimStat.ValueType.SENT)+ "\n"+ 
-					"MIN Received Messages:"	+minimum(SimStat.ValueType.REICEVED)+ "\n"+
+					"MIN Received Messages:"	+minimum(SimStat.ValueType.RECEIVED)+ "\n"+
 					"MIN Number of Signatures:"	+minimum(SimStat.ValueType.SIGNATURES)+ "\n"+
 					"MIN Consumed Energy:"		+minimum(SimStat.ValueType.ENERGY)+ "\n"+
 					"MIN Consumed Energy:"		+minimum(SimStat.ValueType.ENERGY)+ "\n"+
 					"MIN Stored Messages:"		+minimum(SimStat.ValueType.STORED)+ "\n"+
 					
 					"MAX Sent Messages:"		+maximum(SimStat.ValueType.SENT)+ "\n"+
-					"MAX Received Messages:"	+maximum(SimStat.ValueType.REICEVED)+ "\n"+
+					"MAX Received Messages:"	+maximum(SimStat.ValueType.RECEIVED)+ "\n"+
 					"MAX Number of Signatures:"	+maximum(SimStat.ValueType.SIGNATURES)+ "\n"+
 					"MAX Consumed Energy:"		+maximum(SimStat.ValueType.ENERGY)+ "\n"+
 					"MAX Stored Messages:"		+maximum(SimStat.ValueType.STORED)+ "\n"+
 				
 					"AVG Sent Messages:"		+average(SimStat.ValueType.SENT)+ "\n"+
-					"AVG Received Messages:"	+average(SimStat.ValueType.REICEVED)+ "\n"+
+					"AVG Received Messages:"	+average(SimStat.ValueType.RECEIVED)+ "\n"+
 					"AVG Number of Signatures:"	+average(SimStat.ValueType.SIGNATURES)+ "\n"+
 					"AVG Consumed Energy:"		+average(SimStat.ValueType.ENERGY)+ "\n"+
 					"AVG Stored Messages:"		+average(SimStat.ValueType.STORED)+ "\n"+
 				
 				
 					"STANDARD DEVIATION Sent Messages:"			+standardDeviation(SimStat.ValueType.SENT)+ "\n"+
-					"STANDARD DEVIATION Received Messages:"		+standardDeviation(SimStat.ValueType.REICEVED)+ "\n"+
+					"STANDARD DEVIATION Received Messages:"		+standardDeviation(SimStat.ValueType.RECEIVED)+ "\n"+
 					"STANDARD DEVIATION Number of Signatures:"	+standardDeviation(SimStat.ValueType.SIGNATURES)+ "\n"+
 					"STANDARD DEVIATION Consumed Energy:"		+standardDeviation(SimStat.ValueType.ENERGY)+ "\n"+
 					"STANDARD DEVIATION Stored Messages:"		+standardDeviation(SimStat.ValueType.STORED)+ "\n"+
-					"CLONE WAS FOUND:"		+cloneWasFound.toString()+ "\n";
+					"CLONE WAS FOUND:"		+cloneWasFound().toString()+ "\n";
 		}
 		catch (BadValue e){}
 		return null;
 	}
 	
+	private Boolean found = null;
 	
-	public Boolean cloneWasFound=new Boolean(false);
+	
+	
+	public Boolean cloneWasFound(){
+		if (found != null) return found;
+		else{
+			Iterator<NodeStat> it = nodesStats.iterator();
+			found = new Boolean(false);
+			while(it.hasNext() || found.equals(true)){
+				found = it.next().foundClone;
+			}
+		}
+		return found;
+	}
 	
 	public Double minimum(ValueType what) throws BadValue{
 		synchronized(nodesStats){
@@ -69,7 +82,7 @@ public class SimStat {
 				case SENT:
 					if (singleNodeStatistics.sent<min) min=singleNodeStatistics.sent;
 					break;
-				case REICEVED:
+				case RECEIVED:
 					if (singleNodeStatistics.received<min) min=singleNodeStatistics.received;
 					break;
 				case SIGNATURES:
@@ -99,7 +112,7 @@ public class SimStat {
 				case SENT:
 					if (singleNodeStatistics.sent>max) max=singleNodeStatistics.sent;
 					break;
-				case REICEVED:
+				case RECEIVED:
 					if (singleNodeStatistics.received<max) max=singleNodeStatistics.received;
 					break;
 				case SIGNATURES:
@@ -131,7 +144,7 @@ public class SimStat {
 				case SENT:
 					tot+=singleNodeStatistics.sent;
 					break;
-				case REICEVED:
+				case RECEIVED:
 					tot+=singleNodeStatistics.received;
 					break;
 				case SIGNATURES:
@@ -163,7 +176,7 @@ public class SimStat {
 				case SENT:
 					sum+=Math.pow(singleNodeStatistics.sent-average, 2);
 					break;
-				case REICEVED:
+				case RECEIVED:
 					sum+=Math.pow(singleNodeStatistics.received-average, 2);
 					break;
 				case SIGNATURES:

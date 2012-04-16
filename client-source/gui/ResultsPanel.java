@@ -143,10 +143,10 @@ public class ResultsPanel extends JFrame{
 				avgEnergy.setText(stats.average(SimStat.ValueType.ENERGY).toString());
 				stdevEnergy.setText(stats.standardDeviation(SimStat.ValueType.ENERGY).toString());
 		
-				 minReceived.setText(stats.minimum(SimStat.ValueType.REICEVED).toString());
-				 maxReceived.setText(stats.maximum(SimStat.ValueType.REICEVED).toString());
-				 avgReceived.setText(stats.average(SimStat.ValueType.REICEVED).toString());
-				 stdevReceived.setText(stats.standardDeviation(SimStat.ValueType.REICEVED).toString());
+				 minReceived.setText(stats.minimum(SimStat.ValueType.RECEIVED).toString());
+				 maxReceived.setText(stats.maximum(SimStat.ValueType.RECEIVED).toString());
+				 avgReceived.setText(stats.average(SimStat.ValueType.RECEIVED).toString());
+				 stdevReceived.setText(stats.standardDeviation(SimStat.ValueType.RECEIVED).toString());
 				
 				 minSent.setText(stats.minimum(SimStat.ValueType.SENT).toString());
 				 maxSent.setText(stats.maximum(SimStat.ValueType.SENT).toString());

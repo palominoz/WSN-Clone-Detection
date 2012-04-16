@@ -9,6 +9,7 @@
 package logic;
 
 import exceptions.*;
+
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.util.Iterator;
@@ -256,20 +257,56 @@ public class Hypervisor extends Thread{
 		}
 	}
 	
-	private void sendStatistics(SimStat stats, RemoteServer server){
+	private void sendStatistics(SimStat stats, RemoteServer server) throws RemoteException{
 		//Min, max, average, e standard deviation
 		/*numero di messaggi spediti, 
 		 * numero di messaggi ricevuti, 
 		 * numero di verifche di frme crittografche, 
 		 * totale dell'energia consumata,
 		 *  numero di messaggi memorizzati nella memoria del nodo. */
+		try{
+			server.push(new Double(stats.minimum(SimStat.ValueType.SENT)).toString());
+			server.push(new Double(stats.maximum(SimStat.ValueType.SENT)).toString());
+			server.push(new Double(stats.average(SimStat.ValueType.SENT)).toString());
+			server.push(new Double(stats.standardDeviation(SimStat.ValueType.SENT)).toString());
+			
+			server.push(new Double(stats.minimum(SimStat.ValueType.RECEIVED)).toString());
+			server.push(new Double(stats.maximum(SimStat.ValueType.RECEIVED)).toString());
+			server.push(new Double(stats.average(SimStat.ValueType.RECEIVED)).toString());
+			server.push(new Double(stats.standardDeviation(SimStat.ValueType.RECEIVED)).toString());
+			
+			server.push(new Double(stats.minimum(SimStat.ValueType.SIGNATURES)).toString());
+			server.push(new Double(stats.maximum(SimStat.ValueType.SIGNATURES)).toString());
+			server.push(new Double(stats.average(SimStat.ValueType.SIGNATURES)).toString());
+			server.push(new Double(stats.standardDeviation(SimStat.ValueType.SIGNATURES)).toString());
+			
+			server.push(new Double(stats.minimum(SimStat.ValueType.ENERGY)).toString());
+			server.push(new Double(stats.maximum(SimStat.ValueType.ENERGY)).toString());
+			server.push(new Double(stats.average(SimStat.ValueType.ENERGY)).toString());
+			server.push(new Double(stats.standardDeviation(SimStat.ValueType.ENERGY)).toString());
+			
+			server.push(new Double(stats.minimum(SimStat.ValueType.STORED)).toString());
+			server.push(new Double(stats.maximum(SimStat.ValueType.STORED)).toString());
+			server.push(new Double(stats.average(SimStat.ValueType.STORED)).toString());
+			server.push(new Double(stats.standardDeviation(SimStat.ValueType.STORED)).toString());
+			
+			server.push(new Boolean(stats.cloneWasFound()).toString());
+			
+			
+		} catch (BadValue e) {
+			UserInterface.showError("There was a problem with the system.");
+		}
+		finally{
+			
+		}
+		
+		
 		
 		
 	}
 	
 	private void collectAndDeliver(int currentSimulation) throws NoNodesAvailable{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
-		simulationStatistics.cloneWasFound=cloneWasFound;
 		Log.write(simulationStatistics.toString());
 		cloneWasFound=false;
 		try{

@@ -33,6 +33,7 @@ public class LogPanel extends JFrame {
 		super("Log Panel");
 		setSize(700,240);
 		JScrollPane pane = new JScrollPane(textArea);
+		textArea.setBackground(Color.black);
 		textArea.setEditable(false);
 		getContentPane().add(pane);
 		setVisible(true);
@@ -60,26 +61,26 @@ public class LogPanel extends JFrame {
 		    //StyleConstants.setFontSize(style, 30);
 
 		    // Background color
-		    //StyleConstants.setBackground(style, Color.blue);
+		    //StyleConstants.setBackground(style, Color.black);
 
 		    // Foreground color
 		    StyleConstants.setForeground(style, color);
 
 		    // Append to document
-		    doc.insertString(doc.getLength(), timestamp()+ " || ", black());
+		    doc.insertString(doc.getLength(), timestamp()+ " || ", defaultStyle());
 		    doc.insertString(doc.getLength(), what + "\n", style);
 		} catch (BadLocationException e) {
 		}
 	}
 	
-	private static Style black(){
+	private static Style defaultStyle(){
 		 // Get the text pane's document
 	    StyledDocument doc = (StyledDocument)logPanel().textArea.getDocument();
 
 	    // Create a style object and then set the style attributes
 	    Style style = doc.addStyle("StyleName", null);
 	    
-	    StyleConstants.setForeground(style, Color.black);
+	    StyleConstants.setForeground(style, Color.white);
 	    
 	    return style;
 	}
@@ -87,7 +88,7 @@ public class LogPanel extends JFrame {
 	public static String timestamp(){
 		java.util.Date date= new java.util.Date();
 		Timestamp t = new Timestamp(date.getTime());
-		return new SimpleDateFormat("h:m:s").format(t);
+		return new SimpleDateFormat("H:m:s").format(t);
 	}
 
 }

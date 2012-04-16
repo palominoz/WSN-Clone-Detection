@@ -6,6 +6,7 @@ import java.rmi.*;
 import java.rmi.server.*;
 import stats.*;
 import commonInterface.*;
+import commonInterface.RemoteServer;
 
 import java.util.*;
 import gui.*;
@@ -20,8 +21,11 @@ public class ConcreteRemoteServer extends UnicastRemoteObject implements commonI
 	
 	
 	
-	public void push(String simulationStatistics) throws RemoteException{
-		ServerPanel.pushStats(simulationStatistics);
+	public void push(String data) throws RemoteException{
+		if (data.equals(RemoteServer.NEWLINE)){
+			data = "\n";
+		}
+		ServerPanel.pushStats(data);
 	}
 	
 

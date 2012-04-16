@@ -348,6 +348,7 @@ abstract public class Node extends Thread{
 			Log.write("Node is going to be turned off..", "logic.Node", "HIGH");
 		} catch (CloneHasBeenDetected e){
 			Hypervisor.notifyClone(e.clonePosition);
+			stats.foundClone();
 		} catch (MessageNotSupportedByNode e){
 			Log.write("Node "+nid+" reiceved a not supported message", "logic.Node", "CRITICAL");
 		} catch (NodeNotFound e) {

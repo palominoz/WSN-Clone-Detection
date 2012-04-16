@@ -10,7 +10,10 @@ package logic;
 
 import exceptions.*;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Vector;
 
 import stats.SimStat;
 import utilities.Log;
@@ -241,6 +244,29 @@ public class Hypervisor extends Thread{
 		}
 	}
 	
+	private void sendSettings(RemoteServer server){
+		Vector<String> data = Settings.orderedSettings();
+		Iterator<String> it = data.iterator();
+		while(it.hasNext()){
+			try {
+				server.push(it.next());
+			} catch (RemoteException e) {
+				UserInterface.showError("There was a network problem");
+			}
+		}
+	}
+	
+	private void sendStatistics(SimStat stats, RemoteServer server){
+		//Min, max, average, e standard deviation
+		/*numero di messaggi spediti, 
+		 * numero di messaggi ricevuti, 
+		 * numero di verifche di frme crittografche, 
+		 * totale dell'energia consumata,
+		 *  numero di messaggi memorizzati nella memoria del nodo. */
+		
+		
+	}
+	
 	private void collectAndDeliver(int currentSimulation) throws NoNodesAvailable{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
 		simulationStatistics.cloneWasFound=cloneWasFound;
@@ -250,7 +276,11 @@ public class Hypervisor extends Thread{
 		RemoteServer server=(RemoteServer) Naming.lookup("rmi://"+Settings.server+"/RemoteServer");
 		//ref.pushData(simulationStatistics);
 		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
-		server.push(simulationStatistics.toString());
+		
+		sendSettings(server);
+		sendStatistics(simulationStatistics, server);
+		server.push(RemoteServer.NEWLINE);
+		
 		UserInterface.notifySentSimulation(currentSimulation);
 		}
 		catch(Exception e){

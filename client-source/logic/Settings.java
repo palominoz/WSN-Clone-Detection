@@ -10,6 +10,7 @@
 package logic;
 
 import java.rmi.Naming;
+import java.util.Vector;
 
 import utilities.Log;
 
@@ -21,6 +22,22 @@ import enums.SupportedProtocol;
  * 
  * */
 public class Settings {
+	
+	
+	public static Vector<String> orderedSettings(){
+		Vector<String> vector = new Vector<String>();
+		vector.add(protocol.toString());
+		vector.add(new Integer(numberOfSimulations).toString());
+		vector.add(new Integer(numberOfNodes).toString());
+		vector.add(new Double(transmissionRange).toString());
+		vector.add(new Double(claimForwardProbability).toString());
+		vector.add(new Integer(numberOfForwards).toString());
+		vector.add(new Double(defaultMaxEnergy).toString());
+		vector.add(new Double(transmitConsumption).toString());
+		vector.add(new Double(receiveConsumption).toString());
+		vector.add(new Double(signatureConsumption).toString());
+		return vector;
+	}
 	
 	public static boolean serverIsValid(){
 		try{
@@ -88,6 +105,7 @@ public class Settings {
 	
 	public static boolean areReady(){
 		return
+			protocol 				!= SupportedProtocol.NONE &&
 			numberOfNodes			>0 &&
 			numberOfSimulations		>0 &&
 			claimForwardProbability >0 &&

@@ -13,15 +13,15 @@ public class RmiServer{
 	
 	public static void main(String[] args) throws Exception{
 		ServerPanel.setVisibity(true);
-		String rmiObjName= "rmi://"+HOST+"/RemoteSimData";//address RemoteObj
+		String rmiObjName= "rmi://"+HOST+"/RemoteServer";//address RemoteObj
 		try{
 			//System.setSecurityManager(new java.rmi.RMISecurityManager());
 			System.setProperty("java.security.policy", "rmi.policy");
 			Registry registry = LocateRegistry.createRegistry(1099);
 			//initialized remote object
-			SimDataImpl remoteObj=new SimDataImpl();
+			ConcreteRemoteServer server=new ConcreteRemoteServer();
 			//remoteObj registered into rmi registry
-			Naming.rebind(rmiObjName,remoteObj);
+			Naming.rebind(rmiObjName,server);
 		}
 		
 		catch(RemoteException e){e.printStackTrace();}

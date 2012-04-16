@@ -247,10 +247,10 @@ public class Hypervisor extends Thread{
 		Log.write(simulationStatistics.toString());
 		cloneWasFound=false;
 		try{
-		RemoteSimData ref=(RemoteSimData) Naming.lookup("rmi://"+Settings.server+"/RemoteSimData");
+		RemoteServer server=(RemoteServer) Naming.lookup("rmi://"+Settings.server+"/RemoteServer");
 		//ref.pushData(simulationStatistics);
 		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
-		ref.pushData(simulationStatistics.toString());
+		server.push(simulationStatistics.toString());
 		UserInterface.notifySentSimulation(currentSimulation);
 		}
 		catch(Exception e){

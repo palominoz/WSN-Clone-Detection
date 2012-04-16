@@ -24,7 +24,7 @@ public class Settings {
 	
 	public static boolean serverIsValid(){
 		try{
-			Naming.lookup("rmi://"+server+"/RemoteSimData");
+			Naming.lookup("rmi://"+server+"/RemoteServer");
 		}
 		catch (Exception e){
 			return false;

@@ -36,7 +36,7 @@ public class Log{
 		}
 		
 		if ("FLOW".equals(severity)){
-			UserInterface.log(what, Color.blue);
+			UserInterface.log(what, Color.gray);
 		}
 		
 		

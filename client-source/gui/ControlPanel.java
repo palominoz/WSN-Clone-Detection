@@ -34,8 +34,9 @@ public class ControlPanel extends JFrame{
 	public JButton pauseButton = new JButton("Pause");
 	private JButton	fetchButton = new JButton("Fetch Settings");
 	private JButton lookupServerButton = new JButton("Lookup Server");
+	private JButton overrideSettingsButton = new JButton("Override");
 	private JButton showAllMessagesButton = new JButton("Paths");
-	private JButton showRangesButton = new JButton("Ranges");
+	private JButton showRangesButton = new JButton("Range");
 	private JButton showIDsButton = new JButton("IDs");
 	private JButton showIdlesButton = new JButton("Idles");
 	private JButton highlightNodeButton = new JButton("Highlight");
@@ -58,6 +59,7 @@ public class ControlPanel extends JFrame{
 		pauseButton.setActionCommand("pause");
 		fetchButton.setActionCommand("fetch");
 		lookupServerButton.setActionCommand("lookup");
+		overrideSettingsButton.setActionCommand("override");
 		highlightNodeButton.setActionCommand("highlightNode");
 		
 		
@@ -78,6 +80,7 @@ public class ControlPanel extends JFrame{
 		pauseButton.addActionListener(Listener.listener());
 		fetchButton.addActionListener(Listener.listener());
 		lookupServerButton.addActionListener(Listener.listener());
+		overrideSettingsButton.addActionListener(Listener.listener());
 		
 		
 		//GUI group
@@ -96,7 +99,7 @@ public class ControlPanel extends JFrame{
 		
 		
 		//Commands creation
-		JPanel buttonGroup=new JPanel(new GridLayout(2,3));
+		JPanel buttonGroup=new JPanel(new GridLayout(3,3));
 		buttonGroup.setBorder(BorderFactory.createTitledBorder("Simulation controls"));
 		buttonGroup.add(startButton);
 		buttonGroup.add(nextButton);
@@ -104,6 +107,7 @@ public class ControlPanel extends JFrame{
 		buttonGroup.add(pauseButton);
 		buttonGroup.add(fetchButton);
 		buttonGroup.add(lookupServerButton);
+		buttonGroup.add(overrideSettingsButton);
 		
 		//GUI group creation
 		JPanel guiGroup=new JPanel(new GridLayout(2,3));
@@ -125,7 +129,7 @@ public class ControlPanel extends JFrame{
 		content.add(guiGroup, BorderLayout.SOUTH);
 		
 		//settings
-		setSize(400,240);
+		setSize(400,320);
 		setVisible(true);
 	}
 	

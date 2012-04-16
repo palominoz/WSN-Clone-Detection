@@ -88,6 +88,10 @@ public class Listener implements ActionListener {
 			AmbientPanel.setRangesToBeShown();
 		}
 		
+		if ("override".equals(e.getActionCommand())){
+			SettingsPanel.settingsPanel();
+		}
+		
 		if ("showIdles".equals(e.getActionCommand())){
 			AmbientPanel.setIdleNodesToBeShown();
 		}

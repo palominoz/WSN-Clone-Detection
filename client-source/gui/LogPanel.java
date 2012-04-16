@@ -52,10 +52,10 @@ public class LogPanel extends JFrame {
 		    //StyleConstants.setItalic(style, true);
 
 		    // Bold
-		    //StyleConstants.setBold(style, true);
+		    StyleConstants.setBold(style, true);
 
 		    // Font family
-		    //StyleConstants.setFontFamily(style, "SansSerif");
+		    StyleConstants.setFontFamily(style, "SansSerif");
 
 		    // Font size
 		    //StyleConstants.setFontSize(style, 30);
@@ -79,6 +79,7 @@ public class LogPanel extends JFrame {
 
 	    // Create a style object and then set the style attributes
 	    Style style = doc.addStyle("StyleName", null);
+	    StyleConstants.setBold(style, true);
 	    
 	    StyleConstants.setForeground(style, Color.white);
 	    
@@ -88,7 +89,7 @@ public class LogPanel extends JFrame {
 	public static String timestamp(){
 		java.util.Date date= new java.util.Date();
 		Timestamp t = new Timestamp(date.getTime());
-		return new SimpleDateFormat("H:m:s").format(t);
+		return new SimpleDateFormat("H:mm:ss").format(t);
 	}
 
 }

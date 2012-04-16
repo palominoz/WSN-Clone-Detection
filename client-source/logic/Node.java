@@ -218,12 +218,11 @@ abstract public class Node extends Thread{
 			if (storedInfo.nid.equals(potentialClone.nid) ){
 				//Log.write("CHECK: " + storedInfo+ " && "+ potentialClone);
 				if (storedInfo.position.equals(potentialClone.position)){
-					Log.write("Potential clone", "logic.Node", "CRITICAL");
+					Log.write("Potential clone", "logic.Node", "HIGH");
 					toAdd=false;
 				}
 				else{
 					Log.write("FOUND CLONE DETAILS: id+pos 1)" +storedInfo+" 2) "+potentialClone, "logic.Node", "CRITICAL");
-					throw new CloneHasBeenDetected(storedInfo.position, this);
 				}
 			}
 		}
@@ -344,7 +343,7 @@ abstract public class Node extends Thread{
 			Log.write("Node "+nid+" "+ e.getMessage(), "logic.Node", "BUG");
 		} catch (NotEnoughEnergy e) {
 			UserInterface.setDeadNode(this);
-			Log.write("Node "+nid+" finished its energy and will be turned off", "logic.Node", "HIGH");
+			Log.write("Node "+nid+" finished its energy and will be turned off", "logic.Node", "CRITICAL");
 		} catch (NodeIsNotActive e) {
 			Log.write("Node is going to be turned off..", "logic.Node", "HIGH");
 		} catch (CloneHasBeenDetected e){
@@ -356,7 +355,7 @@ abstract public class Node extends Thread{
 		} 
 		
 		finally{
-			Log.write("Node "+nid+" has been turned off."+ (count++).toString(), "logic.Node", "HIGH");
+			Log.write("Node "+nid+" has been turned off."+ (count++).toString(), "logic.Node", "LOW");
 		}
 	}
 	static Integer count = 0;

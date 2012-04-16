@@ -22,7 +22,7 @@ import enums.SupportedProtocol;
  * */
 public class Settings {
 	
-	private static boolean serverIsValid(){
+	public static boolean serverIsValid(){
 		try{
 			Naming.lookup("rmi://"+server+"/RemoteSimData");
 		}
@@ -62,7 +62,6 @@ public class Settings {
 	
 	//action delay from change of status, to make sure all the other nodes are switched on(msec).
 	//public static int status_change_delay;
-	
 	
 	public static String status(){
 		String status = new String("<html>");

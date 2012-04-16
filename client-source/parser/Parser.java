@@ -10,9 +10,9 @@ import gui.UserInterface;
 
 public class Parser{
 	private  URL url;
-	public Parser(String adress){
+	public Parser(String address){
 		try{ 
-				url = new URL(adress); 
+				url = new URL(address); 
 				InputStream stream=url.openStream ();
 				BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
 				String document; 
@@ -45,6 +45,7 @@ public class Parser{
 						else if(document.contains("E_signature="))
 							Settings.signatureConsumption=Integer.parseInt(document.substring(12));	
 					}
+				Log.write("Settings were loaded from: "+ url, "parser.Parser", "FLOW");
 					//set.print();
 	}  catch (MalformedURLException mue) {
 		Log.write("Inserted URL is not valid.", "parser.Parser", "HIGH");

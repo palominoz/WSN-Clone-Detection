@@ -8,6 +8,10 @@
 * */
 package utilities;
 
+import gui.UserInterface;
+
+import java.awt.Color;
+
 public class Log{
 	
 	public static void write(String what, String domain, String severity){
@@ -28,7 +32,14 @@ public class Log{
 		//if ("messages.Message".equals(domain) && "DEBUG".equals(severity)){
 		
 		System.out.println(t.getId()+"|---|"+severity+"|---|"+domain+"|---|"+what);
+		UserInterface.log(what, Color.red);
 		}
+		
+		if ("FLOW".equals(severity)){
+			UserInterface.log(what, Color.blue);
+		}
+		
+		
 		
 	}
 	

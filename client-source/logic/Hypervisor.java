@@ -14,6 +14,7 @@ import java.util.Random;
 
 import stats.SimStat;
 import utilities.Log;
+import utilities.Monitor;
 import enums.*;
 import java.rmi.*;
 import commonInterface.*;
@@ -44,7 +45,7 @@ public class Hypervisor extends Thread{
 
 /***INSTANCE MEMBERS***/
 		private long waitForDeadNodeTime=500;
-		private Boolean paused = new Boolean(false);
+		private Monitor monitor = new Monitor(false);
 	
 /***CONSTRUCTORS***/
 	Hypervisor(){}
@@ -199,13 +200,13 @@ public class Hypervisor extends Thread{
 			synchronized(this){
 				try{
 					pauseFlag();
-					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FINE");
+					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FLOW");
 					UserInterface.notifyStartOfSimulation(currentSimulation);
 					resetForNewSimulation();
 					Ambient.start();
 					this.wait();
 					pauseFlag();
-					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FINE");
+					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FLOW");
 					Ambient.kill();
 					sleep(waitForDeadNodeTime);
 					UserInterface.notifyEndOfSimulation(currentSimulation);
@@ -214,24 +215,25 @@ public class Hypervisor extends Thread{
 						this.wait();
 					}
 					pauseFlag();
-					collectAndDeliver();
+					collectAndDeliver(currentSimulation);
 				}
 				catch (InterruptedException e){
 					Log.write("Hypervisor was interrupted", "logic.Hypervisor", "CRITICAL");
 				}
 				catch (NoNodesAvailable e){
-					Log.write("There was an error in collecting the results", "logic.Hypervisor", "HIGH");
+					Log.write("There was an error in collecting the results", "logic.Hypervisor", "CRITICAL");
 				}
 				
 			}
 		}
+		UserInterface.showMessage("Simulations have finished.");
 	}
 
 	private static void pauseFlag(){
-		if (hypervisor().paused) {
-			synchronized(hypervisor().paused){
+		if (hypervisor().monitor.paused) {
+			synchronized(hypervisor().monitor){
 				try {
-					hypervisor().paused.wait();
+					hypervisor().monitor.wait();
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -239,7 +241,7 @@ public class Hypervisor extends Thread{
 		}
 	}
 	
-	private void collectAndDeliver() throws NoNodesAvailable{
+	private void collectAndDeliver(int currentSimulation) throws NoNodesAvailable{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
 		simulationStatistics.cloneWasFound=cloneWasFound;
 		Log.write(simulationStatistics.toString());
@@ -247,8 +249,9 @@ public class Hypervisor extends Thread{
 		try{
 		RemoteSimData ref=(RemoteSimData) Naming.lookup("rmi://"+Settings.server+"/RemoteSimData");
 		//ref.pushData(simulationStatistics);
-		
+		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
 		ref.pushData(simulationStatistics.toString());
+		UserInterface.notifySentSimulation(currentSimulation);
 		}
 		catch(Exception e){
 			Log.write("Error while connecting to RMI server..\n","logic.Hypervisor","CRITICAL");
@@ -256,7 +259,6 @@ public class Hypervisor extends Thread{
 		}
 		
 		ResultsPanel.showStatistics(simulationStatistics);
-		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
 	}
 	
 	private void resetForNewSimulation(){
@@ -265,7 +267,7 @@ public class Hypervisor extends Thread{
 			cloneWasFound=false;
 			idleNodes=0;
 			Ambient.clear();
-			Log.write("Preparing for new simulation.." ,"logic.Hypervisor","VERBOSE");
+			Log.write("Preparing for new simulation.." ,"logic.Hypervisor","FLOW");
 			simulationChecker=new EndOfSimulationChecker();
 			simulationChecker.start();
 			createNodes();
@@ -274,15 +276,15 @@ public class Hypervisor extends Thread{
 		
 	}
 	public static void pause() {
-		synchronized(hypervisor().paused){
-			hypervisor().paused = true;
+		synchronized(hypervisor().monitor){
+			hypervisor().monitor.paused = false;
 		}
 	}
 	
 	public static void unpause(){
-		synchronized(hypervisor().paused){
-			hypervisor().paused = false;
-			hypervisor().paused.notify();
+		synchronized(hypervisor().monitor){
+			hypervisor().monitor.paused = false;
+			hypervisor().monitor.notify();
 		}
 	}
 }

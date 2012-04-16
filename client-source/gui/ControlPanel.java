@@ -181,7 +181,6 @@ public class ControlPanel extends JFrame{
 		else{
 			controlPanel().startButton.setEnabled(true);
 			controlPanel().stopButton.setEnabled(true);
-			controlPanel().pauseButton.setEnabled(true);
 			controlPanel().nextButton.setEnabled(true);
 		}
 	}

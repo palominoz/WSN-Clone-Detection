@@ -1,5 +1,6 @@
 package gui;
 
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JOptionPane;
@@ -71,9 +72,13 @@ public class UserInterface {
 	}
 	
 	
+	public static void log(String what, Color color){
+		LogPanel.write(what, color);
+	}
 	
 	public static void wakeUI(){
 		ControlPanel.controlPanel();
+		LogPanel.logPanel().write("Graphical User Interface has been waked.", Color.orange);
 	}
 	
 	public static void main(String args[]){
@@ -94,6 +99,13 @@ public class UserInterface {
 			    "Error",
 			    JOptionPane.ERROR_MESSAGE);
 	}
+	
+	public static void showMessage(String text){
+		JOptionPane.showMessageDialog(null,
+			    text,
+			    "System Message",
+			    JOptionPane.PLAIN_MESSAGE);
+	}
 
 	public static void setDeadNode(Node node) {
 		try {
@@ -101,6 +113,11 @@ public class UserInterface {
 		} catch (GraphicalNodeDoesntExists e) {
 			Log.write("User Interface cannot find the node requested to be set as attacked", "gui.UserInterface", "HIGH");
 		}
+	}
+
+	public static void notifySentSimulation(int currentSimulation) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

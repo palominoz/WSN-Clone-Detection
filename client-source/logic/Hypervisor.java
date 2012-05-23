@@ -20,6 +20,7 @@ import java.util.Vector;
 import stats.SimStat;
 import utilities.Log;
 import utilities.Monitor;
+import utilities.StopWatch;
 import enums.*;
 import java.rmi.*;
 import commonInterface.*;
@@ -46,7 +47,8 @@ public class Hypervisor extends Thread{
 		//time to wait with idle status of all node to make sure the simulation is finished.
 		static int simulationTerminationDelay=500;
 		
-		public boolean stopsAfterCompletingEverySimulation=false;
+		public static boolean stopsAfterCompletingEverySimulation=false;
+		public static boolean stopsAfterDetectingClone=false;
 
 /***INSTANCE MEMBERS***/
 		private long waitForDeadNodeTime=500;
@@ -185,9 +187,11 @@ public class Hypervisor extends Thread{
 		UserInterface.setClonedNode(p);
 		UserInterface.setDetectorNode(detector);
 		cloneWasFound=true;
-		Ambient.pause();
-		ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
-		ControlPanel.controlPanel().pauseButton.setText("Unpause");
+		if (stopsAfterDetectingClone){
+			Ambient.pause();
+			ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
+			ControlPanel.controlPanel().pauseButton.setText("Unpause");
+		}
 	}
 	
 	private static boolean cloneWasFound=false;
@@ -211,20 +215,24 @@ public class Hypervisor extends Thread{
 					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FLOW");
 					UserInterface.notifyStartOfSimulation(currentSimulation);
 					resetForNewSimulation();
+					StopWatch.start();
 					Ambient.start();
 					this.wait();
+					double time = StopWatch.stop();
+					DecimalFormat format = new DecimalFormat("#.#");
+					Log.write("Simulation "+currentSimulation+" has finished in " + format.format(time / 1000) + " seconds", "logic.Hypervisor", "FLOW");
 					pauseFlag();
-					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FLOW");
 					if (cloneWasFound) Log.write("A clone was found", "logic.Hypervisor", "CLONE");
 					Ambient.kill();
 					sleep(waitForDeadNodeTime);
 					UserInterface.notifyEndOfSimulation(currentSimulation);
-					if (stopsAfterCompletingEverySimulation) {
-						Log.write("Hypervisor must be notified to start the next simulation", "logic.Hypervisor", "HIGH");
-						this.wait();
-					}
-					pauseFlag();
 					collectAndDeliver(currentSimulation);
+					if (stopsAfterCompletingEverySimulation) {
+						pause();
+						ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
+						ControlPanel.controlPanel().pauseButton.setText("Unpause");
+						ControlPanel.notifyPause();
+					}
 				}
 				catch (InterruptedException e){
 					Log.write("Hypervisor was interrupted", "logic.Hypervisor", "CRITICAL");
@@ -255,7 +263,7 @@ public class Hypervisor extends Thread{
 		Iterator<String> it = data.iterator();
 		while(it.hasNext()){
 			try {
-				server.push(it.next());
+				server.push(it.next()+" ");
 			} catch (RemoteException e) {
 				UserInterface.showError("There was a network problem");
 			}
@@ -271,30 +279,30 @@ public class Hypervisor extends Thread{
 		 *  numero di messaggi memorizzati nella memoria del nodo. */
 		try{
 			DecimalFormat format = new DecimalFormat("#.###");
-			server.push(format.format(stats.minimum(SimStat.ValueType.SENT)));
-			server.push(format.format(stats.maximum(SimStat.ValueType.SENT)));
-			server.push(format.format(stats.average(SimStat.ValueType.SENT)));
-			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SENT)));
+			server.push(format.format(stats.minimum(SimStat.ValueType.SENT))+" ");
+			server.push(format.format(stats.maximum(SimStat.ValueType.SENT))+" ");
+			server.push(format.format(stats.average(SimStat.ValueType.SENT))+" ");
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SENT))+" ");
 			
-			server.push(format.format(stats.minimum(SimStat.ValueType.RECEIVED)));
-			server.push(format.format(stats.maximum(SimStat.ValueType.RECEIVED)));
-			server.push(format.format(stats.average(SimStat.ValueType.RECEIVED)));
-			server.push(format.format(stats.standardDeviation(SimStat.ValueType.RECEIVED)));
+			server.push(format.format(stats.minimum(SimStat.ValueType.RECEIVED))+" ");
+			server.push(format.format(stats.maximum(SimStat.ValueType.RECEIVED))+" ");
+			server.push(format.format(stats.average(SimStat.ValueType.RECEIVED))+" ");
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.RECEIVED))+" ");
 			
-			server.push(format.format(stats.minimum(SimStat.ValueType.SIGNATURES)));
-			server.push(format.format(stats.maximum(SimStat.ValueType.SIGNATURES)));
-			server.push(format.format(stats.average(SimStat.ValueType.SIGNATURES)));
-			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SIGNATURES)));
+			server.push(format.format(stats.minimum(SimStat.ValueType.SIGNATURES))+" ");
+			server.push(format.format(stats.maximum(SimStat.ValueType.SIGNATURES))+" ");
+			server.push(format.format(stats.average(SimStat.ValueType.SIGNATURES))+" ");
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SIGNATURES))+" ");
 			
-			server.push(format.format(stats.minimum(SimStat.ValueType.ENERGY)));
-			server.push(format.format(stats.maximum(SimStat.ValueType.ENERGY)));
-			server.push(format.format(stats.average(SimStat.ValueType.ENERGY)));
-			server.push(format.format(stats.standardDeviation(SimStat.ValueType.ENERGY)));
+			server.push(format.format(stats.minimum(SimStat.ValueType.ENERGY))+" ");
+			server.push(format.format(stats.maximum(SimStat.ValueType.ENERGY))+" ");
+			server.push(format.format(stats.average(SimStat.ValueType.ENERGY))+" ");
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.ENERGY))+" ");
 			
-			server.push(format.format(stats.minimum(SimStat.ValueType.STORED)));
-			server.push(format.format(stats.maximum(SimStat.ValueType.STORED)));
-			server.push(format.format(stats.average(SimStat.ValueType.STORED)));
-			server.push(format.format(stats.standardDeviation(SimStat.ValueType.STORED)));
+			server.push(format.format(stats.minimum(SimStat.ValueType.STORED))+" ");
+			server.push(format.format(stats.maximum(SimStat.ValueType.STORED))+" ");
+			server.push(format.format(stats.average(SimStat.ValueType.STORED))+" ");
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.STORED))+" ");
 			
 			server.push(new Boolean(stats.cloneWasFound()).toString());
 			

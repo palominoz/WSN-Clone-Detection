@@ -55,6 +55,12 @@ public class Listener implements ActionListener {
 			ControlPanel.controlPanel().pauseButton.setText("Unpause");
 			ControlPanel.notifyPause();
 		}
+		if ("ClonePause".equals(e.getActionCommand())){
+			Hypervisor.stopsAfterDetectingClone = ! (Hypervisor.stopsAfterDetectingClone);
+		}
+		if ("SimPause".equals(e.getActionCommand())){
+			Hypervisor.stopsAfterCompletingEverySimulation = !(Hypervisor.stopsAfterCompletingEverySimulation);
+		}
 		
 		if ("lookup".equals(e.getActionCommand())){
 			try {

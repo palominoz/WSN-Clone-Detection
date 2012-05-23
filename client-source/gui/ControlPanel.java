@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JButton;
@@ -45,7 +46,9 @@ public class ControlPanel extends JFrame{
 	public JComboBox IDsCombo=new JComboBox();
 	
 	public JLabel statusLabel=new JLabel(Settings.status());
-
+	
+	public JCheckBox pauseWhenDetectingClone = new JCheckBox("Pause when detecting clone");
+	public JCheckBox pauseEverySimulation = new JCheckBox("Pause after each simulation");
 	
 	ControlPanel(){
 		//init
@@ -62,6 +65,8 @@ public class ControlPanel extends JFrame{
 		overrideSettingsButton.setActionCommand("override");
 		highlightNodeButton.setActionCommand("highlightNode");
 		
+
+		
 		
 		
 		//GUI group
@@ -72,6 +77,8 @@ public class ControlPanel extends JFrame{
 		showIdlesButton.setActionCommand("showIdles");
 		//lower
 		
+		pauseWhenDetectingClone.setActionCommand("ClonePause");
+		pauseEverySimulation.setActionCommand("SimPause");
 		
 		//set listener
 		startButton.addActionListener(Listener.listener());
@@ -81,7 +88,8 @@ public class ControlPanel extends JFrame{
 		fetchButton.addActionListener(Listener.listener());
 		lookupServerButton.addActionListener(Listener.listener());
 		overrideSettingsButton.addActionListener(Listener.listener());
-		
+		pauseWhenDetectingClone.addActionListener(Listener.listener());
+		pauseEverySimulation.addActionListener(Listener.listener());
 		
 		//GUI group
 		showAllMessagesButton.addActionListener(Listener.listener());
@@ -99,15 +107,21 @@ public class ControlPanel extends JFrame{
 		
 		
 		//Commands creation
-		JPanel buttonGroup=new JPanel(new GridLayout(3,3));
-		buttonGroup.setBorder(BorderFactory.createTitledBorder("Simulation controls"));
-		buttonGroup.add(startButton);
-		buttonGroup.add(nextButton);
-		buttonGroup.add(stopButton);
-		buttonGroup.add(pauseButton);
-		buttonGroup.add(fetchButton);
-		buttonGroup.add(lookupServerButton);
-		buttonGroup.add(overrideSettingsButton);
+		JPanel controlGroup=new JPanel(new GridLayout(2,1));
+		JPanel buttons = new JPanel(new GridLayout(4,2));
+		JPanel checks = new JPanel(new GridLayout(2,1));
+		controlGroup.setBorder(BorderFactory.createTitledBorder("Simulation controls"));
+		buttons.add(startButton);
+		buttons.add(nextButton);
+		buttons.add(stopButton);
+		buttons.add(pauseButton);
+		buttons.add(fetchButton);
+		buttons.add(lookupServerButton);
+		buttons.add(overrideSettingsButton);
+		checks.add(pauseWhenDetectingClone);
+		checks.add(pauseEverySimulation);
+		controlGroup.add(buttons);
+		controlGroup.add(checks);
 		
 		//GUI group creation
 		JPanel guiGroup=new JPanel(new GridLayout(2,3));
@@ -125,11 +139,11 @@ public class ControlPanel extends JFrame{
 		
 		//composition
 		content.add(statusGroup, BorderLayout.NORTH);
-		content.add(buttonGroup, BorderLayout.CENTER);
+		content.add(controlGroup, BorderLayout.CENTER);
 		content.add(guiGroup, BorderLayout.SOUTH);
 		
 		//settings
-		setSize(400,320);
+		setSize(400,400);
 		setVisible(true);
 	}
 	

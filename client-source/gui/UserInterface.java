@@ -15,6 +15,9 @@ import messages.Message;
 public class UserInterface {
 	private UserInterface singleton=null;
 	
+	private static boolean enabled = true;
+	
+	
 	private UserInterface userInterface(){
 		synchronized(singleton){
 			if (singleton==null) singleton=new UserInterface();
@@ -23,6 +26,7 @@ public class UserInterface {
 	}
 	
 	UserInterface(){}
+
 	
 	public static void addNode(Node node){
 		AmbientPanel.addNode(node);
@@ -63,8 +67,8 @@ public class UserInterface {
 		}
 	}
 	
-	public static void addMessage(Message message){
-		AmbientPanel.addMessage(message);
+	public static void addMessage(Node sender, Node receiver){
+		AmbientPanel.addMessage(sender.position(), receiver.position());
 	}
 	
 	public static void showError(Component parent, String error){
@@ -116,8 +120,6 @@ public class UserInterface {
 	}
 
 	public static void notifySentSimulation(int currentSimulation) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 }

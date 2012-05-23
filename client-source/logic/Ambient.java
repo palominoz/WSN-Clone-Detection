@@ -108,7 +108,7 @@ public class Ambient {
 					Message copy=original.clone();
 					copy.updatePath(receiver);
 					receiver.receiveMessage(copy);
-					UserInterface.addMessage(copy);
+					UserInterface.addMessage(sender, receiver);
 				} catch (NodeIsTooFar e){
 					throw e=new NodeIsTooFar("The destination is unreachable by the sender");
 				} catch (MessageHasNotBeenSent e) {
@@ -144,7 +144,7 @@ public class Ambient {
 	
 	public static void start(){
 		checkNeighbours();
-		Log.write("Broadcasting start simulation message..", "logic.Ambient", "FINE");
+		Log.write("Broadcasting simulation start message..", "logic.Ambient", "FLOW");
 		synchronized(ambient().nodes){
 			Iterator<Node> i=ambient().nodes.iterator();
 			//completeNeighbours();
@@ -152,6 +152,7 @@ public class Ambient {
 				i.next().start();
 			}
 		}
+		Log.write("Simulation started", "logic.Ambient", "FLOW");
 	}
 	
 	
@@ -179,6 +180,7 @@ public class Ambient {
 		}
 	}
 	public static void pause(){
+		Hypervisor.pause();
 		synchronized(ambient().nodes){
 			Iterator<Node> i=ambient().nodes.iterator();
 			//completeNeighbours();
@@ -186,10 +188,10 @@ public class Ambient {
 				i.next().pause();
 			}	
 		}
-		Hypervisor.pause();
 	}
 	
 	public static void unpause(){
+		Hypervisor.unpause();
 		synchronized(ambient().nodes){
 			Iterator<Node> i=ambient().nodes.iterator();
 			//completeNeighbours();
@@ -197,7 +199,6 @@ public class Ambient {
 				i.next().unpause();
 			}	
 		}
-		Hypervisor.unpause();
 	}
 	
 	

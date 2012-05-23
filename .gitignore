@@ -8,6 +8,8 @@
 *.so
 *.origin
 
+report
+
 # Directories #
 ###############
 bin

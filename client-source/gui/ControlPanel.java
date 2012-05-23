@@ -134,7 +134,7 @@ public class ControlPanel extends JFrame{
 	}
 	
 	public static void notifyEndOfSimulation(Integer index) {
-		controlPanel().pauseButton.setEnabled(false);
+		//controlPanel().pauseButton.setEnabled(false);
 		
 		controlPanel().statusLabel.setText("<html><font color='green'>Sending stats .. </font></html>");
 		controlPanel().showAllMessagesButton.setEnabled(false);
@@ -143,6 +143,7 @@ public class ControlPanel extends JFrame{
 		controlPanel().showIdlesButton.setEnabled(false);
 		controlPanel().IDsCombo.setEnabled(false);
 		controlPanel().highlightNodeButton.setEnabled(false);
+		controlPanel().IDsCombo.removeAllItems();
 	}
 	
 	public static void notifyPause(){

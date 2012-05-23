@@ -27,7 +27,7 @@ import logic.Settings;
 import messages.Message.MessageJump;
 
 import gui.AmbientPanel.GraphicalNode;
-import gui.AmbientPanel.MessageListItem;
+import gui.AmbientPanel.GraphicalJump;
 
 @SuppressWarnings("serial")
 public class AmbientDrawing extends JPanel{
@@ -71,23 +71,10 @@ public class AmbientDrawing extends JPanel{
 	
 	private void drawAllMessages(Graphics2D painter){
 		synchronized (AmbientPanel.ambientPanel().messageList){
-			try{
-				Iterator<MessageListItem> k=AmbientPanel.ambientPanel().messageList.iterator();
-				
-				while (k.hasNext()){	
-					MessageListItem item=k.next();
-					Iterator<MessageJump> j=item.message.jumps().iterator();
-					while (j.hasNext()){
-						MessageJump jump=j.next();
-						drawLine(painter, new Line(jump), item.color);
-					}
-				}
-			} catch(MessageHasNotBeenSent e){
-				Log.write("AmbientDrawing detected a message which has not been sent", "gui.AmbientDrawing", "BUG");
-			} catch (NodeIsTooFar e) {
-				Log.write("AmbientDrawing detected a non legal jump (distance)", "gui.AmbientDrawing", "BUG");
+			Iterator<GraphicalJump> k=AmbientPanel.ambientPanel().messageList.iterator();
+			while (k.hasNext()){	
+				drawLine(painter, new Line(k.next()), Color.black);
 			}
-			
 		}
 	}
 	
@@ -178,6 +165,11 @@ public class AmbientDrawing extends JPanel{
 		Line(MessageJump mj){
 			origin=mj.origin.position();
 			destination=mj.destination.position();
+		}
+		
+		Line(GraphicalJump gj){
+			origin = gj.start;
+			destination = gj.end;
 		}
 	};
 	

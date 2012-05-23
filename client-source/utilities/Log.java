@@ -39,6 +39,10 @@ public class Log{
 			UserInterface.log(what, Color.gray);
 		}
 		
+		if ("CLONE".equals(severity)){
+			UserInterface.log(what, Color.green);
+		}
+		
 		
 		
 	}

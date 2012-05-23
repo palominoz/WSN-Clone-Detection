@@ -26,6 +26,7 @@ public class ConcreteRemoteServer extends UnicastRemoteObject implements commonI
 			data = "\n";
 		}
 		ServerPanel.pushStats(data);
+		OutputFile.write(data);
 	}
 	
 

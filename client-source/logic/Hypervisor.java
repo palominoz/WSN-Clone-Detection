@@ -12,6 +12,7 @@ import exceptions.*;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Vector;
@@ -181,7 +182,6 @@ public class Hypervisor extends Thread{
 	
 	
 	public static void notifyClone(Position p){
-		Log.write("A clone has been found", "logic.Hypervisor", "CLONE");
 		UserInterface.setClonedNode(p);
 		cloneWasFound=true;
 	}
@@ -211,6 +211,7 @@ public class Hypervisor extends Thread{
 					this.wait();
 					pauseFlag();
 					Log.write("Simulation "+currentSimulation+" has finished.", "logic.Hypervisor", "FLOW");
+					if (cloneWasFound) Log.write("A clone was found", "logic.Hypervisor", "CLONE");
 					Ambient.kill();
 					sleep(waitForDeadNodeTime);
 					UserInterface.notifyEndOfSimulation(currentSimulation);
@@ -265,33 +266,35 @@ public class Hypervisor extends Thread{
 		 * totale dell'energia consumata,
 		 *  numero di messaggi memorizzati nella memoria del nodo. */
 		try{
-			server.push(new Double(stats.minimum(SimStat.ValueType.SENT)).toString());
-			server.push(new Double(stats.maximum(SimStat.ValueType.SENT)).toString());
-			server.push(new Double(stats.average(SimStat.ValueType.SENT)).toString());
-			server.push(new Double(stats.standardDeviation(SimStat.ValueType.SENT)).toString());
+			DecimalFormat format = new DecimalFormat("#.###");
+			server.push(format.format(stats.minimum(SimStat.ValueType.SENT)));
+			server.push(format.format(stats.maximum(SimStat.ValueType.SENT)));
+			server.push(format.format(stats.average(SimStat.ValueType.SENT)));
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SENT)));
 			
-			server.push(new Double(stats.minimum(SimStat.ValueType.RECEIVED)).toString());
-			server.push(new Double(stats.maximum(SimStat.ValueType.RECEIVED)).toString());
-			server.push(new Double(stats.average(SimStat.ValueType.RECEIVED)).toString());
-			server.push(new Double(stats.standardDeviation(SimStat.ValueType.RECEIVED)).toString());
+			server.push(format.format(stats.minimum(SimStat.ValueType.RECEIVED)));
+			server.push(format.format(stats.maximum(SimStat.ValueType.RECEIVED)));
+			server.push(format.format(stats.average(SimStat.ValueType.RECEIVED)));
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.RECEIVED)));
 			
-			server.push(new Double(stats.minimum(SimStat.ValueType.SIGNATURES)).toString());
-			server.push(new Double(stats.maximum(SimStat.ValueType.SIGNATURES)).toString());
-			server.push(new Double(stats.average(SimStat.ValueType.SIGNATURES)).toString());
-			server.push(new Double(stats.standardDeviation(SimStat.ValueType.SIGNATURES)).toString());
+			server.push(format.format(stats.minimum(SimStat.ValueType.SIGNATURES)));
+			server.push(format.format(stats.maximum(SimStat.ValueType.SIGNATURES)));
+			server.push(format.format(stats.average(SimStat.ValueType.SIGNATURES)));
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.SIGNATURES)));
 			
-			server.push(new Double(stats.minimum(SimStat.ValueType.ENERGY)).toString());
-			server.push(new Double(stats.maximum(SimStat.ValueType.ENERGY)).toString());
-			server.push(new Double(stats.average(SimStat.ValueType.ENERGY)).toString());
-			server.push(new Double(stats.standardDeviation(SimStat.ValueType.ENERGY)).toString());
+			server.push(format.format(stats.minimum(SimStat.ValueType.ENERGY)));
+			server.push(format.format(stats.maximum(SimStat.ValueType.ENERGY)));
+			server.push(format.format(stats.average(SimStat.ValueType.ENERGY)));
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.ENERGY)));
 			
-			server.push(new Double(stats.minimum(SimStat.ValueType.STORED)).toString());
-			server.push(new Double(stats.maximum(SimStat.ValueType.STORED)).toString());
-			server.push(new Double(stats.average(SimStat.ValueType.STORED)).toString());
-			server.push(new Double(stats.standardDeviation(SimStat.ValueType.STORED)).toString());
+			server.push(format.format(stats.minimum(SimStat.ValueType.STORED)));
+			server.push(format.format(stats.maximum(SimStat.ValueType.STORED)));
+			server.push(format.format(stats.average(SimStat.ValueType.STORED)));
+			server.push(format.format(stats.standardDeviation(SimStat.ValueType.STORED)));
 			
 			server.push(new Boolean(stats.cloneWasFound()).toString());
 			
+			server.push("\n");
 			
 		} catch (BadValue e) {
 			UserInterface.showError("There was a problem with the system.");
@@ -316,7 +319,7 @@ public class Hypervisor extends Thread{
 		
 		sendSettings(server);
 		sendStatistics(simulationStatistics, server);
-		server.push(RemoteServer.NEWLINE);
+		server.push("\n");
 		
 		UserInterface.notifySentSimulation(currentSimulation);
 		}
@@ -334,7 +337,7 @@ public class Hypervisor extends Thread{
 			cloneWasFound=false;
 			idleNodes=0;
 			Ambient.clear();
-			Log.write("Preparing for new simulation.." ,"logic.Hypervisor","FLOW");
+			Log.write("Preparing for a new simulation.." ,"logic.Hypervisor","FLOW");
 			simulationChecker=new EndOfSimulationChecker();
 			simulationChecker.start();
 			createNodes();
@@ -344,7 +347,7 @@ public class Hypervisor extends Thread{
 	}
 	public static void pause() {
 		synchronized(hypervisor().monitor){
-			hypervisor().monitor.paused = false;
+			hypervisor().monitor.paused = true;
 		}
 	}
 	

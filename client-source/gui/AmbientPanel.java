@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -10,21 +9,13 @@ import java.awt.Insets;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.border.Border;
-import javax.swing.border.TitledBorder;
-
-import utilities.Log;
 
 import exceptions.GraphicalNodeDoesntExists;
-import exceptions.NodeNotFound;
 
 import logic.Node;
 import logic.Position;
-import messages.Message;
-import java.awt.geom.Ellipse2D;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.Vector;
 
 public class AmbientPanel extends JFrame{
@@ -38,38 +29,27 @@ public class AmbientPanel extends JFrame{
 	
 	public static boolean IdleNodesToBeShown=false;
 	
-	public static class MessageListItem{
+	public static class GraphicalJump{
 		
-		static int defaultRefreshCount=1;
 		
-		public Message message;
+		public Position start;
+		public Position end;
 		public int length;
-		public int refreshCount;
-		Color color;
 		
-		MessageListItem(Message m){
-			message=m;
+		GraphicalJump(Position s, Position e){
+			start = s;
+			end = e;
 			length=0;
-			Random generator=new Random();
-			color=new Color(generator.nextInt(255),generator.nextInt(255),generator.nextInt(255));
-			refreshCount=defaultRefreshCount;
 		}
 		
 		
-		public boolean equals(MessageListItem i){
-			return i.message==message;
+		public boolean equals(GraphicalJump i){
+			return i.start.equals(start) && i.end.equals(end) || i.start.equals(end) && i.end.equals(start);
 		}
 		
 		
 		public String toString(){
-			try {
-				return new String("\nSENDER: "+message.sender().info().nid+"\nLENGTH: "+message.pathLength()+"\n" );
-			} catch (NullPointerException e) {
-				Log.write("Tried to convert to string a MessageListItem, which has some NullPointerException", "gui.AmbientPanel", "BUG");
-			} catch (NodeNotFound e) {
-				Log.write("Tried to convert to string a MessageListItem, which has a message without a sender", "gui.AmbientPanel", "BUG");
-			}
-			return new String();
+			return start.toString() + " " + end.toString();
 		}
 		
 	};
@@ -106,7 +86,7 @@ public class AmbientPanel extends JFrame{
 	};
 	
 	
-	public Vector<MessageListItem> messageList=new Vector<MessageListItem>();
+	public Vector<GraphicalJump> messageList=new Vector<GraphicalJump>();
 	
 	private static AmbientPanel singleton=null;
 	
@@ -249,11 +229,12 @@ public class AmbientPanel extends JFrame{
 		}
 	}
 
-	public static void addMessage(Message m){
-		MessageListItem i=new MessageListItem(m);
+	public static void addMessage(Position s, Position e){
+		GraphicalJump jump = new GraphicalJump(s,e);
 		synchronized(ambientPanel().messageList){
-			if (ambientPanel().messageList.contains(i)) return;
-			else ambientPanel().messageList.add(i);
+			if (ambientPanel().messageList.contains(jump) == false) {
+				ambientPanel().messageList.add(jump);
+			}
 		}
 		field.repaint();
 	}

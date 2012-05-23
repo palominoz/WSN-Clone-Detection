@@ -89,7 +89,7 @@ public class Listener implements ActionListener {
 		}
 		
 		if ("override".equals(e.getActionCommand())){
-			SettingsPanel.settingsPanel();
+			SettingsPanel.wake();
 		}
 		
 		if ("showIdles".equals(e.getActionCommand())){

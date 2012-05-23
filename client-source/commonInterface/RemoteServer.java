@@ -1,23 +1,22 @@
 package commonInterface;
 
+/*
+ * The rmi interface should allow the client application to push a string representing the 
+ * results of a single simulation. There comes a really simple interface with only one method 
+ * to achieve the objective.
+ */
 
 
 import java.rmi.*;
-import stats.*;
 
-//this interface is owned by client and server
+
 public interface RemoteServer extends Remote{
 	
-	public static final String NEWLINE = "NEW_LINE";
-	
-	public void push(String simulationStatistics) throws RemoteException; //method invoked by client to push a simulation data 
+	/*
+	 * This methods will serialize and unmarshall automatically the string of the parameter.  
+	 */
+	public void push(String simulationStatistics) throws RemoteException; 
 	
 	
 }
-
-
-/*
-al momento ho messo un solo metodo,cioè il client finisce una simulazione e invoca pushData
-(passando come parametro un SimStat) sull'oggetto remoto,ma è da rivedere
-*/
 

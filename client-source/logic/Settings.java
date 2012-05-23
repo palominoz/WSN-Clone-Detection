@@ -77,6 +77,9 @@ public class Settings {
 	//buffer size, useful for real world simulations, expressed in number of messages.
 	public static int bufferSize=300;
 	
+	//time in milliseconds that a node must wait before doing something
+	public static int timeToWait=0;
+	
 	//action delay from change of status, to make sure all the other nodes are switched on(msec).
 	//public static int status_change_delay;
 	
@@ -116,6 +119,7 @@ public class Settings {
 			signatureConsumption	>=0 &&
 			numberOfForwards		>=0 &&
 			bufferSize				>0 &&
+			timeToWait				>= 0 &&
 			serverIsValid();
 		
 	}	

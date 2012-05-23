@@ -67,8 +67,8 @@ public class LogPanel extends JFrame {
 		    StyleConstants.setForeground(style, color);
 
 		    // Append to document
-		    doc.insertString(doc.getLength(), timestamp()+ " || ", defaultStyle());
-		    doc.insertString(doc.getLength(), what + "\n", style);
+		    doc.insertString(0, timestamp()+ " || ", defaultStyle());
+		    doc.insertString(timestamp().length() + 4, what + "\n", style);
 		} catch (BadLocationException e) {
 		}
 	}

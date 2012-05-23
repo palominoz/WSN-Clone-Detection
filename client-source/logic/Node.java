@@ -81,6 +81,7 @@ abstract public class Node extends Thread{
 				wait();
 			}
 			if (nodeShouldStayActive==false) throw new NodeIsNotActive("This node must be killed.");
+			sleep(Settings.timeToWait);
 			return buffer.remove(0);
 		}	
 	}
@@ -223,6 +224,7 @@ abstract public class Node extends Thread{
 				}
 				else{
 					Log.write("FOUND CLONE DETAILS: id+pos 1)" +storedInfo+" 2) "+potentialClone, "logic.Node", "CRITICAL");
+					throw new CloneHasBeenDetected(potentialClone.position, this);
 				}
 			}
 		}
@@ -327,7 +329,7 @@ abstract public class Node extends Thread{
 					listen();
 				}
 				else {
-					Log.write("Node "+ nid + " is paused", "logic.Node", "BUG");
+					Log.write("Node "+ nid + " is paused", "logic.Node", "LOW");
 					synchronized(monitor){
 						monitor.wait();
 					}
@@ -344,6 +346,7 @@ abstract public class Node extends Thread{
 		} catch (NotEnoughEnergy e) {
 			UserInterface.setDeadNode(this);
 			Log.write("Node "+nid+" finished its energy and will be turned off", "logic.Node", "CRITICAL");
+			Hypervisor.notifyIdle(this);
 		} catch (NodeIsNotActive e) {
 			Log.write("Node is going to be turned off..", "logic.Node", "HIGH");
 		} catch (CloneHasBeenDetected e){

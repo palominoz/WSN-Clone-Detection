@@ -65,7 +65,8 @@ public class SimStat {
 		else{
 			Iterator<NodeStat> it = nodesStats.iterator();
 			found = false;
-			while(it.hasNext() || found.equals(true)){
+			while(it.hasNext()){
+				if (found.equals(true)) break;
 				found = it.next().foundClone;
 			}
 		}

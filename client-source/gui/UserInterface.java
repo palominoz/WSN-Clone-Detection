@@ -52,6 +52,14 @@ public class UserInterface {
 			Log.write("User Interface cannot find the node requested to be set as attacker", "gui.UserInterface", "HIGH");
 		}
 	}
+	
+	public static void setDetectorNode(Node detector) {
+		try {
+			AmbientPanel.setDetectorNode(detector);
+		} catch (GraphicalNodeDoesntExists e) {
+			Log.write("User Interface cannot find the node requested to be set as attacker", "gui.UserInterface", "HIGH");
+		}
+	}
 	public static void setAttackedNode(Node node){
 		try {
 			AmbientPanel.setAttackedNode(node);
@@ -67,8 +75,8 @@ public class UserInterface {
 		}
 	}
 	
-	public static void addMessage(Node sender, Node receiver){
-		AmbientPanel.addMessage(sender.position(), receiver.position());
+	public static void addMessage(Node sender, Node receiver, boolean highlighted){
+		AmbientPanel.addMessage(sender.position(), receiver.position(), highlighted);
 	}
 	
 	public static void showError(Component parent, String error){

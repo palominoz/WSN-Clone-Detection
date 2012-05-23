@@ -27,7 +27,7 @@ public class ControlMessage extends Message implements Cloneable{
 	}
 	
 	//
-	public String type(){
+	public String type(){//reflection..
 		return "ControlMessage";
 	}
 	

@@ -223,7 +223,7 @@ abstract public class Node extends Thread{
 					toAdd=false;
 				}
 				else{
-					Log.write("FOUND CLONE DETAILS: id+pos 1)" +storedInfo+" 2) "+potentialClone, "logic.Node", "CRITICAL");
+					Log.write("FOUND CLONE DETAILS: id+pos 1)" +storedInfo+" 2) "+potentialClone, "logic.Node", "MEDIUM");
 					throw new CloneHasBeenDetected(potentialClone.position, this);
 				}
 			}
@@ -320,6 +320,7 @@ abstract public class Node extends Thread{
 		try{
 			encodeSignature();
 			sendMessage(new LocationClaim(this));
+			useEnergy(Settings.signatureConsumption);
 			while (nodeShouldStayActive){
 				if (!paused) {
 					if (isIdle==false && nodeShouldStayActive) {
@@ -350,7 +351,7 @@ abstract public class Node extends Thread{
 		} catch (NodeIsNotActive e) {
 			Log.write("Node is going to be turned off..", "logic.Node", "HIGH");
 		} catch (CloneHasBeenDetected e){
-			Hypervisor.notifyClone(e.clonePosition);
+			Hypervisor.notifyClone(e.clonePosition, e.detectorNode);
 			stats.foundClone();
 		} catch (MessageNotSupportedByNode e){
 			Log.write("Node "+nid+" reiceved a not supported message", "logic.Node", "CRITICAL");

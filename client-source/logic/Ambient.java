@@ -21,6 +21,7 @@ import enums.SimulationSpeed;
 import exceptions.BufferIsFull;
 import exceptions.GraphicalNodeDoesntExists;
 import exceptions.MessageHasNotBeenSent;
+import exceptions.NodeNotFound;
 import exceptions.NotEnoughEnergy;
 import exceptions.PositionNotAvailable;
 import messages.Message;
@@ -42,6 +43,8 @@ public class Ambient {
 	
 	//This class permits only one instance.
 	static Ambient singleton=null;
+
+	private static NodeID clonedNodeID;
 	
 	//Private constructor to prevent new instances from external code.
 	private Ambient(){
@@ -108,7 +111,24 @@ public class Ambient {
 					Message copy=original.clone();
 					copy.updatePath(receiver);
 					receiver.receiveMessage(copy);
-					UserInterface.addMessage(sender, receiver);
+					if (copy.type()=="ControlMessage"){
+						try {
+							if (copy.sender().nid.equals(Ambient.clonedNodeID)){
+								UserInterface.addMessage(sender, receiver, true);
+							}
+							else{
+								UserInterface.addMessage(sender, receiver, false);
+							}
+						} catch (NodeNotFound e) {
+							/* nulla di iportante*/
+						}
+					}
+					else{
+						UserInterface.addMessage(sender, receiver, false);
+					}
+					
+					
+					
 				} catch (NodeIsTooFar e){
 					throw e=new NodeIsTooFar("The destination is unreachable by the sender");
 				} catch (MessageHasNotBeenSent e) {
@@ -136,6 +156,7 @@ public class Ambient {
 			addNode(attacker);
 			UserInterface.setAttackerNode(attacker);
 			UserInterface.setAttackedNode(attacked);
+			Ambient.clonedNodeID = attacked.nid;
 		}
 		catch(PositionNotAvailable e){
 			break creation;

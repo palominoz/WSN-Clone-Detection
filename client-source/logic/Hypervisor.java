@@ -181,9 +181,13 @@ public class Hypervisor extends Thread{
 	
 	
 	
-	public static void notifyClone(Position p){
+	public static void notifyClone(Position p, Node detector){
 		UserInterface.setClonedNode(p);
+		UserInterface.setDetectorNode(detector);
 		cloneWasFound=true;
+		Ambient.pause();
+		ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
+		ControlPanel.controlPanel().pauseButton.setText("Unpause");
 	}
 	
 	private static boolean cloneWasFound=false;

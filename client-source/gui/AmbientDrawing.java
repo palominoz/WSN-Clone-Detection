@@ -72,8 +72,14 @@ public class AmbientDrawing extends JPanel{
 	private void drawAllMessages(Graphics2D painter){
 		synchronized (AmbientPanel.ambientPanel().messageList){
 			Iterator<GraphicalJump> k=AmbientPanel.ambientPanel().messageList.iterator();
-			while (k.hasNext()){	
-				drawLine(painter, new Line(k.next()), Color.black);
+			while (k.hasNext()){
+				GraphicalJump jump = k.next();
+				if (jump.highlighted){
+					drawLine(painter, new Line(jump), Color.blue);
+				}
+				else{
+					drawLine(painter, new Line(jump), Color.black);
+				}
 			}
 		}
 	}
@@ -84,9 +90,9 @@ public class AmbientDrawing extends JPanel{
 		if (gnode.isClone){
 			painter.setColor(Color.RED);
 			painter.draw(new Ellipse2D.Double(
-					(int)(gnode.node.position().X*getWidth()),
-					(int)(gnode.node.position().Y*getHeight()),
-							10,10)
+					(int)(gnode.node.position().X*getWidth()-15),
+					(int)(gnode.node.position().Y*getHeight()-15),
+							30,30)
 					);
 		}
 		
@@ -100,6 +106,7 @@ public class AmbientDrawing extends JPanel{
 		if (gnode.isAttacked) painter.setColor(Color.BLUE);
 		if (gnode.isAttacker){painter.setColor(Color.ORANGE);}
 		if (gnode.isDead){painter.setColor(Color.RED);}
+		if (gnode.isDetector){painter.setColor(Color.GREEN);}
 		if (gnode.isHighlighted){painter.setColor(Color.MAGENTA);}
 		
 		//utils

@@ -34,17 +34,21 @@ public class AmbientPanel extends JFrame{
 		
 		public Position start;
 		public Position end;
+		public boolean highlighted;
 		public int length;
 		
-		GraphicalJump(Position s, Position e){
+		GraphicalJump(Position s, Position e, boolean h){
 			start = s;
 			end = e;
+			highlighted = h;
 			length=0;
 		}
 		
 		
 		public boolean equals(GraphicalJump i){
-			return i.start.equals(start) && i.end.equals(end) || i.start.equals(end) && i.end.equals(start);
+			boolean same = i.start.equals(start) && i.end.equals(end) || i.start.equals(end) && i.end.equals(start);
+			if (same && i.highlighted) highlighted = true;
+			return same;
 		}
 		
 		
@@ -62,6 +66,7 @@ public class AmbientPanel extends JFrame{
 		public boolean isHighlighted=false;
 		public boolean isIdle=false;
 		public boolean isDead=false;
+		public boolean isDetector;
 		
 		GraphicalNode(Node n){
 			node=n;
@@ -214,6 +219,21 @@ public class AmbientPanel extends JFrame{
 		}
 	}
 	
+	public static void setDetectorNode(Node n) throws GraphicalNodeDoesntExists {
+		synchronized(ambientPanel().nodes){
+			Iterator<GraphicalNode> i=ambientPanel().nodes.iterator();
+			while (i.hasNext()){
+				GraphicalNode gn=i.next();
+				if (gn.equals(n)){
+					gn.isDetector=true;
+					field.repaint();
+					return;
+				}
+			}
+			throw new GraphicalNodeDoesntExists("Tried to set attacked node but it doesnt exists.");
+		}
+	}
+	
 	public static void setClonedNode(Position p) throws GraphicalNodeDoesntExists{
 		synchronized(ambientPanel().nodes){
 			Iterator<GraphicalNode> i=ambientPanel().nodes.iterator();
@@ -228,9 +248,11 @@ public class AmbientPanel extends JFrame{
 			throw new GraphicalNodeDoesntExists("Tried to set cloned node but it doesnt exists.");
 		}
 	}
+	
+	
 
-	public static void addMessage(Position s, Position e){
-		GraphicalJump jump = new GraphicalJump(s,e);
+	public static void addMessage(Position s, Position e, boolean h){
+		GraphicalJump jump = new GraphicalJump(s,e,h);
 		synchronized(ambientPanel().messageList){
 			if (ambientPanel().messageList.contains(jump) == false) {
 				ambientPanel().messageList.add(jump);

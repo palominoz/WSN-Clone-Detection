@@ -307,9 +307,11 @@ abstract public class Node extends Thread{
 		manageMessage(m);
 	}
 	
-	
+	// handle to turn off nodes
 	public boolean nodeShouldStayActive=true;
-	public boolean isIdle=false;
+	
+	
+	private boolean isIdle=false;
 	
 	/*
 	 * this function is core activity of the node.A node listens to incoming messages.When status changes to simulating a

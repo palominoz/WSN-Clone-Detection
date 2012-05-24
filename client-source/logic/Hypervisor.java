@@ -116,7 +116,6 @@ public class Hypervisor extends Thread{
 		idleNode.isIdle=true;
 		synchronized(simulationChecker){
 			UserInterface.setIdleNode(idleNode);
-			
 				idleNodes++;
 				simulationChecker.notify();
 			Log.write(idleNodes+ " Nodes out of "+Settings.numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
@@ -159,11 +158,11 @@ public class Hypervisor extends Thread{
 			while (hypervisorHasNotBeenStopped){
 				synchronized(this){
 					try{
-						if (idleNodes >= Settings.numberOfNodes) {
+						if (idleNodes >= Settings.numberOfNodes +1) {
 							Log.write("1ST");
 							activity=false;
 							wait(simulationTerminationDelay);
-							if (idleNodes >= Settings.numberOfNodes && activity==false){
+							if (idleNodes >= Settings.numberOfNodes +1 && activity==false){
 								Log.write("OK");
 								stopHypervisor();
 								hypervisorHasNotBeenStopped=false;

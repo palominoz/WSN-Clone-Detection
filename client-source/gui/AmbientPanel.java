@@ -270,6 +270,11 @@ public class AmbientPanel extends JFrame{
 		rangesToBeShown=!rangesToBeShown;
 		field.repaint();
 	}
+	
+	public static void setActive(boolean active){
+		field.setActive(active);
+		field.repaint();
+	}
 
 	public static void setIDsToBeShown() {
 		IDsToBeShown=!IDsToBeShown;

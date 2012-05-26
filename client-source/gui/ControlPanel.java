@@ -49,6 +49,7 @@ public class ControlPanel extends JFrame{
 	
 	public JCheckBox pauseWhenDetectingClone = new JCheckBox("Pause when detecting clone");
 	public JCheckBox pauseEverySimulation = new JCheckBox("Pause after each simulation");
+	public JCheckBox enableGraphics = new JCheckBox("Disable graphics (~ 10x faster performance)");
 	
 	ControlPanel(){
 		//init
@@ -79,6 +80,7 @@ public class ControlPanel extends JFrame{
 		
 		pauseWhenDetectingClone.setActionCommand("ClonePause");
 		pauseEverySimulation.setActionCommand("SimPause");
+		enableGraphics.setActionCommand("EnableGraphics");
 		
 		//set listener
 		startButton.addActionListener(Listener.listener());
@@ -90,6 +92,7 @@ public class ControlPanel extends JFrame{
 		overrideSettingsButton.addActionListener(Listener.listener());
 		pauseWhenDetectingClone.addActionListener(Listener.listener());
 		pauseEverySimulation.addActionListener(Listener.listener());
+		enableGraphics.addActionListener(Listener.listener());
 		
 		//GUI group
 		showAllMessagesButton.addActionListener(Listener.listener());
@@ -109,7 +112,7 @@ public class ControlPanel extends JFrame{
 		//Commands creation
 		JPanel controlGroup=new JPanel(new GridLayout(2,1));
 		JPanel buttons = new JPanel(new GridLayout(4,2));
-		JPanel checks = new JPanel(new GridLayout(2,1));
+		JPanel checks = new JPanel(new GridLayout(3,1));
 		controlGroup.setBorder(BorderFactory.createTitledBorder("Simulation controls"));
 		buttons.add(startButton);
 		buttons.add(nextButton);
@@ -120,6 +123,7 @@ public class ControlPanel extends JFrame{
 		buttons.add(overrideSettingsButton);
 		checks.add(pauseWhenDetectingClone);
 		checks.add(pauseEverySimulation);
+		checks.add(enableGraphics);
 		controlGroup.add(buttons);
 		controlGroup.add(checks);
 		

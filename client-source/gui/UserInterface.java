@@ -7,15 +7,18 @@ import javax.swing.JOptionPane;
 
 import utilities.Log;
 import exceptions.GraphicalNodeDoesntExists;
+import logic.Hypervisor;
 import logic.Node;
 import logic.NodeID;
 import logic.Position;
 import messages.Message;
 
 public class UserInterface {
+	
+	
 	private UserInterface singleton=null;
 	
-	private static boolean enabled = true;
+	private static boolean disabled = false;
 	
 	
 	private UserInterface userInterface(){
@@ -27,17 +30,32 @@ public class UserInterface {
 	
 	UserInterface(){}
 
+	public static boolean enabled(){
+		return !disabled;
+	}
+	
+	public static void enable(){
+		if (disabled == false) disabled = true;
+	}
+	
+	public static void disable(){
+		if (disabled == true) disabled = false;
+	}
+	
 	
 	public static void addNode(Node node){
+		if (disabled) return;
 		AmbientPanel.addNode(node);
 		ControlPanel.controlPanel().IDsCombo.addItem(node.info().nid);
 	}
 	
 	public static void clearSimulation(){
+		if (disabled) return;
 		AmbientPanel.clearSimulation();
 	}
 	
 	public static void setIdleNode(Node node){
+		if (disabled) return;
 		try {
 			AmbientPanel.setIdleNode(node);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -46,6 +64,7 @@ public class UserInterface {
 	}
 	
 	public static void setAttackerNode(Node node){
+		if (disabled) return;
 		try {
 			AmbientPanel.setAttackerNode(node);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -54,6 +73,7 @@ public class UserInterface {
 	}
 	
 	public static void setDetectorNode(Node detector) {
+		if (disabled) return;
 		try {
 			AmbientPanel.setDetectorNode(detector);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -61,6 +81,7 @@ public class UserInterface {
 		}
 	}
 	public static void setAttackedNode(Node node){
+		if (disabled) return;
 		try {
 			AmbientPanel.setAttackedNode(node);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -68,6 +89,7 @@ public class UserInterface {
 		}
 	}
 	public static void setClonedNode(Position position){
+		if (disabled) return;
 		try {
 			AmbientPanel.setClonedNode(position);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -76,6 +98,7 @@ public class UserInterface {
 	}
 	
 	public static void addMessage(Node sender, Node receiver, boolean highlighted){
+		if (disabled) return;
 		AmbientPanel.addMessage(sender.position(), receiver.position(), highlighted);
 	}
 	
@@ -95,6 +118,7 @@ public class UserInterface {
 	
 	public static void main(String args[]){
 		wakeUI();
+		Hypervisor.wake();
 	}
 
 	public static void notifyEndOfSimulation(Integer indexOfSimulation) {
@@ -120,6 +144,7 @@ public class UserInterface {
 	}
 
 	public static void setDeadNode(Node node) {
+		if (disabled) return;
 		try {
 			AmbientPanel.setDeadNode(node);
 		} catch (GraphicalNodeDoesntExists e) {
@@ -128,6 +153,8 @@ public class UserInterface {
 	}
 
 	public static void notifySentSimulation(int currentSimulation) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

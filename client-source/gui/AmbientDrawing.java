@@ -24,7 +24,6 @@ import utilities.Log;
 import logic.Node;
 import logic.Position;
 import logic.Settings;
-import messages.Message.MessageJump;
 
 import gui.AmbientPanel.GraphicalNode;
 import gui.AmbientPanel.GraphicalJump;
@@ -32,8 +31,22 @@ import gui.AmbientPanel.GraphicalJump;
 @SuppressWarnings("serial")
 public class AmbientDrawing extends JPanel{
 	
+	
+	private boolean disabled = false;
+	
+	public void setActive(boolean active){
+		disabled = active;
+	}
+	
+	
+	
 	public void paintComponent(Graphics g){
 		super.paintComponents(g);
+		if (disabled){
+			g.drawString("**DISABLED**", 10, 20);
+			return;
+		}
+		
 		g.clearRect(0, 0, getWidth(), getHeight());
 		Log.write("Repainting..", "gui.AmbientDrawing", "USELESS");
 		Graphics2D painter = (Graphics2D)g;
@@ -169,10 +182,7 @@ public class AmbientDrawing extends JPanel{
 		Position origin;
 		Position destination;
 		
-		Line(MessageJump mj){
-			origin=mj.origin.position();
-			destination=mj.destination.position();
-		}
+		
 		
 		Line(GraphicalJump gj){
 			origin = gj.start;

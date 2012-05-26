@@ -17,6 +17,7 @@ import java.util.Iterator;
 import messages.*;
 import stats.NodeStat;
 import utilities.Log;
+import utilities.Monitor;
 import enums.*;
 import gui.UserInterface;
 
@@ -51,15 +52,37 @@ abstract public class Node extends Thread{
 	
 	//every node stores the ids they reiceve from other nodes and their position.
 	Vector<NodeInfo> storedNodes;
+	static int a = 0;
 	
-	
-	private class MessageBuffer{
+	class MessageBuffer{
 		//message buffer.
 		private Vector<Message> buffer=new Vector<Message>();
 		
 		MessageBuffer(){}
 		
-		public int size() throws NullPointerException{
+		
+		
+		public synchronized boolean recursiveLock(Iterator<Node> it){
+			a++;
+			Log.write(a + " locked" , "logic.Hypervisor", "SIMSTATUS");
+			if (it.hasNext()){
+				if (size() != 0){
+					return false;
+				}
+				else{
+					return it.next().buffer.recursiveLock(it);
+				}
+			}
+			else{
+				a = 0;
+				if (size()==0){
+					return true;
+				}
+				else return false;
+			}
+		}
+
+		public synchronized int size() throws NullPointerException{
 			if (buffer==null) throw new NullPointerException("Asked for size in a MessageBuffer which has null buffer.");
 			return buffer.size();
 		}
@@ -77,19 +100,35 @@ abstract public class Node extends Thread{
 		}
 		
 		public synchronized Message popBuffer() throws NullPointerException, InterruptedException, NodeIsNotActive{
-			while(buffer.size()==0 && nodeShouldStayActive){
+			while(buffer.size()==0){
+				idle();
 				wait();
+				simulating();
 			}
 			if (nodeShouldStayActive==false) throw new NodeIsNotActive("This node must be killed.");
 			sleep(Settings.timeToWait);
 			return buffer.remove(0);
-		}	
+		}
+		
 	}
 	
 	MessageBuffer buffer;
 	
 	
+	private void idle(){
+		if (idle == false){
+			Hypervisor.notifyIdle(this);
+			idle =true;
+		}
+	}
+	private boolean idle = false;
 	
+	private void simulating(){
+		if (idle && nodeShouldStayActive){
+			Hypervisor.notifySimulating(this);
+		}
+		idle = false;
+	}
 	
 	//get wrapped node information
 	public NodeInfo info(){
@@ -98,6 +137,10 @@ abstract public class Node extends Thread{
 	
 	public String bufferStatus(){
 		return buffer.bufferStatus();
+	}
+	
+	public int bufferSize(){
+		return buffer.size();
 	}
 	
 	//creates and returns cloned node in a different position.
@@ -155,9 +198,6 @@ abstract public class Node extends Thread{
 	//message goes in buffer
 	public void receiveMessage(Message message) throws NullPointerException, MessageHasNotBeenSent, NotEnoughEnergy, BufferIsFull {
 		Log.write("Node "+nid+" is reiceving a message", "logic.Node", "VERBOSE");
-		if (Position.distance(position, message.lastJump().destination.position)>Settings.transmissionRange){
-			Log.write("Node " + info() + " received a non legal message from "+ message.lastSender(), "logic.Node", "CRITICAL");
-		}
 		useEnergy(Settings.receiveConsumption);
 		buffer.pushBuffer(message);
 		//update stats
@@ -276,19 +316,19 @@ abstract public class Node extends Thread{
 	}
 	
 	public void pause(){
-		paused=true;
+		synchronized(monitor){
+			monitor.paused=true;
+		}
 	}
 	
 	public void unpause(){
 		synchronized(monitor){
-			paused=false;
+			monitor.paused=false;
 			monitor.notify();
 		}
 	}
 	
-	
-	Boolean paused=new Boolean(false);
-	Object monitor=new Object();
+	private Monitor monitor=new Monitor(false);
 	
 	//simulation stats
 	NodeStat stats;
@@ -298,18 +338,13 @@ abstract public class Node extends Thread{
 	}
 	
 	private void listen() throws NodeIsNotActive, NullPointerException, InterruptedException, MessageNotSupportedByNode, NotEnoughEnergy, CloneHasBeenDetected, NodeNotFound{
-		Message m=buffer.popBuffer();//qui entra in wait
+		Message message=buffer.popBuffer();//qui entra in wait
 		Log.write("Node "+nid+" is managing message", "logic.Node", "VERBOSE");
-		if (isIdle==true && nodeShouldStayActive) {
-			Hypervisor.notifySimulating(this);
-			isIdle=false;
-		}
-		manageMessage(m);
+		manageMessage(message);
 	}
 	
 	
 	public boolean nodeShouldStayActive=true;
-	public boolean isIdle=false;
 	
 	/*
 	 * this function is core activity of the node.A node listens to incoming messages.When status changes to simulating a
@@ -320,13 +355,8 @@ abstract public class Node extends Thread{
 		try{
 			encodeSignature();
 			sendMessage(new LocationClaim(this));
-			useEnergy(Settings.signatureConsumption);
-			while (nodeShouldStayActive){
-				if (!paused) {
-					if (isIdle==false && nodeShouldStayActive) {
-						Hypervisor.notifyIdle(this);
-						isIdle=true;
-					}
+			while (nodeShouldStayActive){ //while the switch is on
+				if (!monitor.paused) {
 					listen();
 				}
 				else {
@@ -338,7 +368,9 @@ abstract public class Node extends Thread{
 			}
 		}
 		catch (InterruptedException e){
-			Log.write("Node "+nid+" was interrupted", "logic.Node", "BUG");
+			if (bufferSize() != 0){
+				Log.write("Node "+nid+" was interrupted with something to do", "logic.Node", "BUG");
+			}
 		}
 		catch (BadNeighbour e){
 			Log.write("Node "+nid+" find a neighbour too far from himself", "logic.Node", "BUG");
@@ -347,7 +379,7 @@ abstract public class Node extends Thread{
 		} catch (NotEnoughEnergy e) {
 			UserInterface.setDeadNode(this);
 			Log.write("Node "+nid+" finished its energy and will be turned off", "logic.Node", "CRITICAL");
-			Hypervisor.notifyIdle(this);
+			idle();
 		} catch (NodeIsNotActive e) {
 			Log.write("Node is going to be turned off..", "logic.Node", "HIGH");
 		} catch (CloneHasBeenDetected e){
@@ -358,9 +390,9 @@ abstract public class Node extends Thread{
 		} catch (NodeNotFound e) {
 			Log.write("Node "+nid+" didnt find the sender of a message while trying to deconde signature", "logic.Node", "BUG");
 		} 
-		
 		finally{
 			Log.write("Node "+nid+" has been turned off."+ (count++).toString(), "logic.Node", "LOW");
+			idle();
 		}
 	}
 	static Integer count = 0;

@@ -36,28 +36,26 @@ public class REDNode extends Node {
 		try{
 			if (m.type()=="LocationClaim"){
 				if (generator.nextDouble()<Settings.claimForwardProbability){
-					Log.write("LSM GOOD THROW "+ info().toString(), "logic.LSMNode", "VERBOSE");
-					Log.write("Node "+nid+" is forwarding a LC","logic.LSMNode","FINE");
+					Log.write("Node "+nid+" is forwarding a LC","logic.REDNode","FINE");
 					for(int i=0;i<Settings.numberOfForwards;i++){
-						//RED PROTO HASHED POSITION
+		
 						
 						Position global=Position.hashed(m.senderInfo().nid, randomNumber, i);
 						Position local=neighbourForDestination(global);
 						ControlMessage cm=new ControlMessage(m.sender(), global, local);
-						cm.updatePath(this);
 						sendMessage(cm);
 					}
 				}
-				else Log.write("RED BAD THROW "+ info().toString(), "logic.LSMNode", "VERBOSE");
+				else Log.write("RED BAD THROW "+ info().toString(), "logic.REDNode", "VERBOSE");
 			}
 			else if(m.type()=="ControlMessage"){
 				ControlMessage cm=(ControlMessage)m;
 				if (isLocalDestinationOf(cm)){
-					Log.write("Node "+nid+" is forwarding a CM","logic.LSMNode","FINE");
+					Log.write("Node "+nid+" is forwarding a CM","logic.REDNode","FINE");
 					forwardMessage(cm);
 				}
 				else{
-					Log.write("Node "+ info() +" refused a message", "logic.LSMNode", "DEBUG");
+					Log.write("Node "+ info() +" refused a message", "logic.REDNode", "DEBUG");
 				}
 			}
 			else throw new MessageNotSupportedByNode("This node reiceved a not supported type of message.");
@@ -74,9 +72,7 @@ public class REDNode extends Node {
 		catch (NodeNotFound e) {
 			Log.write("Node "+nid+", while forwarding a LocationClaim, didnt find the sender to complete the new ControlMessage", "logic.Node", "BUG");
 		} 
-		catch (NodeIsTooFar e) {
-			Log.write("Node "+nid+" detected a bug, is forwarding a message from a too far node from himself.", "logic.Node", "BUG");
-		} catch (ErrorCalulatingAnHashedPosition e) {
+		catch (ErrorCalulatingAnHashedPosition e) {
 			Log.write("Node "+ nid +" "+ e.getMessage(), "logic.REDNode", "BUG");
 		}
 	}

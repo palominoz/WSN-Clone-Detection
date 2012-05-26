@@ -29,7 +29,7 @@ public class Listener implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if ("start".equals(e.getActionCommand())){
-			if(Settings.areReady()) Hypervisor.runSimulation();
+			if(Settings.areReady()) Hypervisor.startSimulations();
 			else{
 				try {
 					URLPanel.showModalPanel("settings");
@@ -75,6 +75,17 @@ public class Listener implements ActionListener {
 			ControlPanel.controlPanel().pauseButton.setActionCommand("pause");
 			ControlPanel.controlPanel().pauseButton.setText("Pause");
 			ControlPanel.notifyUnpause();
+		}
+		
+		if ("EnableGraphics".equals(e.getActionCommand())){
+			if (UserInterface.enabled()){
+				UserInterface.enable();
+				AmbientPanel.setActive(true);
+			}
+			else{
+				UserInterface.disable();
+				AmbientPanel.setActive(false);
+			}
 		}
 		
 		if ("fetch".equals(e.getActionCommand())){

@@ -36,7 +36,6 @@ public class LSMNode extends Node {
 						Position global=Position.random();
 						Position local=neighbourForDestination(global);
 						ControlMessage cm=new ControlMessage(m.sender(), global, local);
-						cm.updatePath(this);
 						sendMessage(cm);
 					}
 				}
@@ -71,9 +70,6 @@ public class LSMNode extends Node {
 		catch (NodeNotFound e) {
 			Log.write("Node "+nid+", while forwarding a LocationClaim, didnt find the sender to complete the new ControlMessage", "logic.Node", "BUG");
 		} 
-		catch (NodeIsTooFar e) {
-			Log.write("Node "+nid+" detected a bug, is forwarding a message from a too far node from himself.", "logic.Node", "BUG");
-		}
 	}
 	
 	public LSMNode(Position p) throws NidOverflow{

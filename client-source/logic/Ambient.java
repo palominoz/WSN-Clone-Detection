@@ -39,7 +39,7 @@ import gui.UserInterface;
  * */
 
 public class Ambient {
-	private Vector<Node> nodes;
+	public Vector<Node> nodes;
 	
 	//This class permits only one instance.
 	static Ambient singleton=null;
@@ -109,7 +109,6 @@ public class Ambient {
 						Log.write("Ambient detected a non-legal message", "logic.Ambient", "CRITICAL");
 					}
 					Message copy=original.clone();
-					copy.updatePath(receiver);
 					receiver.receiveMessage(copy);
 					if (copy.type()=="ControlMessage"){
 						try {
@@ -126,11 +125,6 @@ public class Ambient {
 					else{
 						UserInterface.addMessage(sender, receiver, false);
 					}
-					
-					
-					
-				} catch (NodeIsTooFar e){
-					throw e=new NodeIsTooFar("The destination is unreachable by the sender");
 				} catch (MessageHasNotBeenSent e) {
 					Log.write("There was an error delivering a message, receiver didnt find the sender of the node.", "logic.Ambient", "BUG");
 				} catch (NotEnoughEnergy e) {
@@ -192,11 +186,10 @@ public class Ambient {
 			Iterator<Node> i=ambient().nodes.iterator();
 			while(i.hasNext()){
 				Node node=i.next();
-				node.nodeShouldStayActive=false;
-				node.wake();
+				node.interrupt();
 			}
 			/*deb*/
-			Log.write("ACTIVE THREADS "+ new Integer(Thread.activeCount()).toString());
+			Log.write("ACTIVE THREADS "+ new Integer(Thread.activeCount()).toString(), "", "SIMSTATUS");
 			/*deb*/
 		}
 	}

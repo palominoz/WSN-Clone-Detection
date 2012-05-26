@@ -24,7 +24,7 @@ public class Log{
 			
 		//if (/*"50".equals(domain) &&*/ "TEST".equals(severity) && t.getId()==30){
 		//if("BUG".equals(severity) || "CRITICAL".equals(severity)){
-		if("BUG".equals(severity) || "CRITICAL".equals(severity)){
+		if("BUG".equals(severity) || "CRITICAL".equals(severity)|| "SIMSTATUS".equals(severity)){
 		//if("BUG".equals(severity) || "CRITICAL".equals(severity) || "HIGH".equals(severity) || "SIMSTATUS".equals(severity)){
 	
 		//if(!"USELESS".equals(severity)){
@@ -32,7 +32,7 @@ public class Log{
 		//if ("messages.Message".equals(domain) && "DEBUG".equals(severity)){
 		
 		System.out.println(t.getId()+"|---|"+severity+"|---|"+domain+"|---|"+what);
-		UserInterface.log(what, Color.red);
+		//UserInterface.log(what, Color.red);
 		}
 		
 		if ("FLOW".equals(severity)){

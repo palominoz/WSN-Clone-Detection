@@ -126,13 +126,7 @@ public class Hypervisor extends Thread{
 		synchronized(hypervisor()){
 			idleNodes++;
 			UserInterface.setIdleNode(idleNode);
-<<<<<<< HEAD
-				idleNodes++;
-				simulationChecker.notify();
-			Log.write(idleNodes+ " Nodes out of "+Settings.numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
-=======
 			//Log.write("I :idle: " + idleNodes , "logic.Hypervisor", "SIMSTATUS");
->>>>>>> prova-terminazione
 		}
 	}
 	
@@ -172,29 +166,6 @@ public class Hypervisor extends Thread{
 		boolean simulating = true;
 		boolean notEmptyBuffers = true;
 		
-<<<<<<< HEAD
-		public void run(){
-			boolean hypervisorHasNotBeenStopped=true;
-			while (hypervisorHasNotBeenStopped){
-				synchronized(this){
-					try{
-						if (idleNodes >= Settings.numberOfNodes +1) {
-							Log.write("1ST");
-							activity=false;
-							wait(simulationTerminationDelay);
-							if (idleNodes >= Settings.numberOfNodes +1 && activity==false){
-								Log.write("OK");
-								stopHypervisor();
-								hypervisorHasNotBeenStopped=false;
-							}
-						}
-						else{
-							activity=true;
-							wait(2000);
-						}
-					} catch (InterruptedException e){
-						Log.write("Hypervisor checker has been interrupted", "logic.Hypervisor", "HIGH");
-=======
 		while(simulating && notEmptyBuffers){
 			synchronized(monitor){
 				if (monitor.paused) monitor.wait();
@@ -210,7 +181,6 @@ public class Hypervisor extends Thread{
 					Node current = it.next();
 					if (current.getState() != Thread.State.WAITING && current.getState() != Thread.State.TERMINATED) {
 						break;
->>>>>>> prova-terminazione
 					}
 					
 					if (it.hasNext() == false){

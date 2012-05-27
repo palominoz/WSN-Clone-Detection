@@ -52,27 +52,27 @@ public class Settings {
 	
 	public static SupportedProtocol protocol=SupportedProtocol.NONE;
 	
-	public static int numberOfNodes=0;
+	public static int numberOfNodes=-1;
 	
-	public static int numberOfSimulations=0;
+	public static int numberOfSimulations=-1;
 	//public static int currentSimulation=0;
 	/*prefer easy access for quick implementation other than information hiding for this class purposes */
 	//probability of a reiceved location claim to be forwarded
-	public static double claimForwardProbability=0;
+	public static double claimForwardProbability=-1;
 	
 	//transmission range of the nodes
-	public static double transmissionRange=0;
+	public static double transmissionRange=-1;
 	
 	//default energy a node starts with.
-	public static double defaultMaxEnergy=0;
+	public static double defaultMaxEnergy=-1;
 	
 	//static values representing the loss of energy from actions of the node.
-	public static double transmitConsumption=0;
-	public static double receiveConsumption=0;
-	public static double signatureConsumption=0;
+	public static double transmitConsumption=-1;
+	public static double receiveConsumption=-1;
+	public static double signatureConsumption=-1;
 	
 	//number of numberOfForwards simulating LSM protocol.
-	public static int numberOfForwards=0;
+	public static int numberOfForwards=-1;
 	
 	//buffer size, useful for real world simulations, expressed in number of messages.
 	public static int bufferSize=300;

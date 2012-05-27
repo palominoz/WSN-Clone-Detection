@@ -23,8 +23,6 @@ import utilities.Monitor;
 import utilities.StopWatch;
 import enums.*;
 import java.rmi.*;
-
-import messages.Message;
 import commonInterface.*;
 import gui.AmbientPanel;
 import gui.ControlPanel;
@@ -49,12 +47,11 @@ public class Hypervisor extends Thread{
 		//time to wait with idle status of all node to make sure the simulation is finished.
 		static int simulationTerminationDelay=500;
 		
-		static int clones = 0;
-		
 		public static boolean stopsAfterCompletingEverySimulation=false;
 		public static boolean stopsAfterDetectingClone=false;
 
 /***INSTANCE MEMBERS***/
+		private long waitForDeadNodeTime=500;
 		private Monitor monitor = new Monitor(false);
 	
 /***CONSTRUCTORS***/
@@ -112,67 +109,50 @@ public class Hypervisor extends Thread{
 	
 	
 	
-	public static void startSimulations(){
-		synchronized(hypervisor().monitor){
-			hypervisor().startSignal = true;
-			hypervisor().monitor.notifyAll();
-		}
-	}
-	public static void wake(){
+	public static void runSimulation(){
 		hypervisor().start();
 	}
-	
 	public static void notifyIdle(Node idleNode){
-		synchronized(hypervisor()){
-			idleNodes++;
+		idleNode.isIdle=true;
+		synchronized(simulationChecker){
 			UserInterface.setIdleNode(idleNode);
-<<<<<<< HEAD
 				idleNodes++;
 				simulationChecker.notify();
 			Log.write(idleNodes+ " Nodes out of "+Settings.numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
-=======
-			//Log.write("I :idle: " + idleNodes , "logic.Hypervisor", "SIMSTATUS");
->>>>>>> prova-terminazione
 		}
 	}
-	
 	
 	public static void notifySimulating(Node simulatingNode){
-		synchronized(hypervisor()){
-			idleNodes--;
-			//Log.write("S: idle: " + idleNodes , "logic.Hypervisor", "SIMSTATUS");
+		simulatingNode.isIdle=false;
+		synchronized(simulationChecker){
+			simulationChecker.activity();
 			UserInterface.setIdleNode(simulatingNode);
-		}
-	}
-
-	public static void notifyClone(Position p, Node detector){
-		Log.write("A clone was found", "logic.Hypervisor", "CLONE");
-		UserInterface.setClonedNode(p);
-		UserInterface.setDetectorNode(detector);
-		clones++;
-		if (stopsAfterDetectingClone){
-			Ambient.pause();
-			ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
-			ControlPanel.controlPanel().pauseButton.setText("Unpause");
+			idleNodes--;
+			simulationChecker.notify();
+			Node n=(Node)Thread.currentThread();
+			Log.write("Node "+n.nid+" is idle", "logic.Hypervisor", "VERBOSE");
+			Log.write(idleNodes+ " Nodes out of "+Settings.numberOfNodes+ " are currently idle", "logic.Hypervisor", "SIMSTATUS");
 		}
 	}
 	
-	private boolean startSignal = false;
+	private static EndOfSimulationChecker simulationChecker=new EndOfSimulationChecker();
 	
-	private void prepareSimulation(){
-		Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FLOW");
-		UserInterface.notifyStartOfSimulation(currentSimulation);
-		resetForNewSimulation();
+	private static class EndOfSimulationChecker extends Thread{
 		
-		Ambient.start();
-	}
-	
-	private void terminateSimulation() throws InterruptedException{
+		{
+			setDaemon(true);
+		}
 		
-		boolean simulating = true;
-		boolean notEmptyBuffers = true;
+		private void stopHypervisor(){
+			synchronized(hypervisor()){
+				hypervisor().notify();
+			}
+		}
 		
-<<<<<<< HEAD
+		public boolean activity=false;
+		
+		public void activity(){activity=true;}
+		
 		public void run(){
 			boolean hypervisorHasNotBeenStopped=true;
 			while (hypervisorHasNotBeenStopped){
@@ -194,120 +174,97 @@ public class Hypervisor extends Thread{
 						}
 					} catch (InterruptedException e){
 						Log.write("Hypervisor checker has been interrupted", "logic.Hypervisor", "HIGH");
-=======
-		while(simulating && notEmptyBuffers){
-			synchronized(monitor){
-				if (monitor.paused) monitor.wait();
-			}
-			simulating = true;
-			notEmptyBuffers = true;
-			sleep(100);
-			Log.write("HH: idle: " + idleNodes , "logic.Hypervisor", "SIMSTATUS");
-			if (idleNodes == Settings.numberOfNodes +1){
-				
-				Iterator<Node> it = Ambient.ambient().nodes.iterator();
-				while(it.hasNext()){
-					Node current = it.next();
-					if (current.getState() != Thread.State.WAITING && current.getState() != Thread.State.TERMINATED) {
-						break;
->>>>>>> prova-terminazione
 					}
-					
-					if (it.hasNext() == false){
-						simulating = false;
-					}
-				}
-				it = Ambient.ambient().nodes.iterator();
-				Node first = it.next();
-				if (simulating == false && first.buffer.recursiveLock(it)){
-					notEmptyBuffers = false;
 				}
 			}
 		}
-	}
+	}; 
 	
 	
-	private void ensureNodesAreKilled() throws InterruptedException{
-		Ambient.kill();
-		Iterator<Node> it = Ambient.ambient().nodes.iterator();
-		while(it.hasNext()){
-			it.next().join();
+	
+	public static void notifyClone(Position p, Node detector){
+		UserInterface.setClonedNode(p);
+		UserInterface.setDetectorNode(detector);
+		cloneWasFound=true;
+		if (stopsAfterDetectingClone){
+			Ambient.pause();
+			ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
+			ControlPanel.controlPanel().pauseButton.setText("Unpause");
 		}
 	}
 	
-	private void runSimulations(){
+	private static boolean cloneWasFound=false;
+	
+	/*COMPLETARE.*/
+	public void run(){
+		/*debug*/
 		try {
+			//setup(SupportedProtocol.LSM, 1, 100);
 			setup();
-			
-			for (currentSimulation=0;currentSimulation<Settings.numberOfSimulations;currentSimulation++){
-				prepareSimulation();
-				
-				StopWatch.start();
-				
-				terminateSimulation();
-				
-				
-				double time = StopWatch.stop();
-				
-				
-				DecimalFormat format = new DecimalFormat("#.#");
-				Log.write("Simulation "+currentSimulation+" has finished in " + format.format(time / 1000) + " seconds", "logic.Hypervisor", "FLOW");
-				
-				
-				ensureNodesAreKilled();
-				
-			
-				UserInterface.notifyEndOfSimulation(currentSimulation);
-				
-				collectAndDeliver(currentSimulation);
-				
-				if (stopsAfterCompletingEverySimulation) {
-					pause();
-					ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
-					ControlPanel.controlPanel().pauseButton.setText("Unpause");
-					ControlPanel.notifyPause();
-				}
-				
-				
-				
-			}
-			
 		} catch (TooManyNodes e) {
 			
 		} catch (SettingsAreNotReady e) {
 			UserInterface.showError(null, e.getMessage());
-		} catch (InterruptedException e){
-			Log.write("Hypervisor was interrupted", "logic.Hypervisor", "CRITICAL");
-		} catch (NoNodesAvailable e){
-			Log.write("There was an error in collecting the results", "logic.Hypervisor", "CRITICAL");
 		}
-
-		UserInterface.showMessage("Simulations have finished.("+clones+" clones found)");
-	}
-	
-	/*COMPLETARE.*/
-	public void run(){
-		try{
-			while(true){
-				synchronized(monitor){
-					monitor.wait();
+		/*debug*/
+		for (currentSimulation=0;currentSimulation<Settings.numberOfSimulations;currentSimulation++){
+			synchronized(this){
+				try{
+					pauseFlag();
+					Log.write("Simulation "+currentSimulation+" is starting.", "logic.Hypervisor", "FLOW");
+					UserInterface.notifyStartOfSimulation(currentSimulation);
+					resetForNewSimulation();
+					StopWatch.start();
+					Ambient.start();
+					this.wait();
+					double time = StopWatch.stop();
+					DecimalFormat format = new DecimalFormat("#.#");
+					Log.write("Simulation "+currentSimulation+" has finished in " + format.format(time / 1000) + " seconds", "logic.Hypervisor", "FLOW");
+					pauseFlag();
+					if (cloneWasFound) Log.write("A clone was found", "logic.Hypervisor", "CLONE");
+					Ambient.kill();
+					sleep(waitForDeadNodeTime);
+					UserInterface.notifyEndOfSimulation(currentSimulation);
+					collectAndDeliver(currentSimulation);
+					if (stopsAfterCompletingEverySimulation) {
+						pause();
+						ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
+						ControlPanel.controlPanel().pauseButton.setText("Unpause");
+						ControlPanel.notifyPause();
+					}
 				}
-				if (startSignal){
-					runSimulations();
-					startSignal = false;
+				catch (InterruptedException e){
+					Log.write("Hypervisor was interrupted", "logic.Hypervisor", "CRITICAL");
+				}
+				catch (NoNodesAvailable e){
+					Log.write("There was an error in collecting the results", "logic.Hypervisor", "CRITICAL");
+				}
+				
+			}
+		}
+		UserInterface.showMessage("Simulations have finished.");
+	}
+
+	private static void pauseFlag(){
+		if (hypervisor().monitor.paused) {
+			synchronized(hypervisor().monitor){
+				try {
+					hypervisor().monitor.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
-		} catch (InterruptedException e){	}
+		}
 	}
 	
-	private void sendSettings(RemoteServer server) throws RemoteException{
+	private void sendSettings(RemoteServer server){
 		Vector<String> data = Settings.orderedSettings();
 		Iterator<String> it = data.iterator();
 		while(it.hasNext()){
 			try {
 				server.push(it.next()+" ");
 			} catch (RemoteException e) {
-				throw e;
+				UserInterface.showError("There was a network problem");
 			}
 		}
 	}
@@ -365,6 +322,7 @@ public class Hypervisor extends Thread{
 	private void collectAndDeliver(int currentSimulation) throws NoNodesAvailable{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
 		Log.write(simulationStatistics.toString());
+		cloneWasFound=false;
 		try{
 		RemoteServer server=(RemoteServer) Naming.lookup("rmi://"+Settings.server+"/RemoteServer");
 		//ref.pushData(simulationStatistics);
@@ -386,11 +344,13 @@ public class Hypervisor extends Thread{
 	
 	private void resetForNewSimulation(){
 		try{
-			Log.write("Preparing for a new simulation.." ,"logic.Hypervisor","FLOW");
-			Ambient.clear();
 			System.gc();
-			clones = 0;
+			cloneWasFound=false;
 			idleNodes=0;
+			Ambient.clear();
+			Log.write("Preparing for a new simulation.." ,"logic.Hypervisor","FLOW");
+			simulationChecker=new EndOfSimulationChecker();
+			simulationChecker.start();
 			createNodes();
 		}
 		catch (TooManyNodes e){}

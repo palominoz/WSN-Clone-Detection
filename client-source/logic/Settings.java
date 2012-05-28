@@ -15,6 +15,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Vector;
 
+import commonInterface.RemoteServer;
+
 import utilities.Log;
 
 import enums.SupportedProtocol;
@@ -45,7 +47,7 @@ public class Settings {
 	
 	public static boolean serverIsValid(){
 		try {
-			Naming.lookup("rmi://"+server+"/RemoteServer");
+			_server = (RemoteServer)Naming.lookup("rmi://"+server+"/RemoteServer");
 			return true;
 		} catch (MalformedURLException e) {
 			UserInterface.showError("The server cannot be found because it's url is malformed");
@@ -56,6 +58,8 @@ public class Settings {
 		}
 		return false;
 	}
+	
+	static RemoteServer _server = null;
 	public static String server = "localhost";
 	
 	public static SupportedProtocol protocol=SupportedProtocol.NONE;

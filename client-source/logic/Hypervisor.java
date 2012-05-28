@@ -352,7 +352,7 @@ public class Hypervisor extends Thread{
 		SimStat simulationStatistics=new SimStat(Ambient.getStats());
 		Log.write(simulationStatistics.toString());
 		try{
-		RemoteServer server=(RemoteServer) Naming.lookup("rmi://"+Settings.server+"/RemoteServer");
+		RemoteServer server=Settings._server;
 		//ref.pushData(simulationStatistics);
 		Log.write("Delivering statistics for the last simulation", "logic.Hypervisor", "FINE");
 		

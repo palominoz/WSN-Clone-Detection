@@ -2,7 +2,10 @@ package gui;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 
 import javax.swing.*;
 
@@ -59,18 +62,19 @@ public class URLPanel extends JFrame implements ActionListener{
 				new Parser(URLTextField.getText());
 			}
 			if (type == "server"){
-				Naming.lookup("rmi://"+URLTextField.getText()+"/RemoteSimData");
+				Naming.lookup("rmi://"+URLTextField.getText()+"/RemoteServer");
 				Settings.server = URLTextField.getText();
+				ControlPanel.update();
 			}
+			setVisible(false);
+		} catch (MalformedURLException e0) {
+			UserInterface.showError("The url inserted is not correct");
+		} catch (RemoteException e1) {
+			UserInterface.showError("The server you have inserted does not respond");
+		} catch (NotBoundException e2) {
+			UserInterface.showError("Generic error");
 		}
-		catch(Exception exc){
-			UserInterface.showError("The server cannot be found at that address");
-		}
-		finally{
-			ControlPanel.update();
-		}
-		setVisible(false);
-
+		
 	}
 	
 	

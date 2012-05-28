@@ -1,5 +1,9 @@
 server-source/output.txt
 
+*.LOCAL.*
+*.BASE.*
+*.orig
+
 # Compiled source #
 ###################
 *.com

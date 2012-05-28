@@ -32,7 +32,7 @@ public class RmiServer{
 			UserInterface.showError("There was a problem setting up server (malformed url)");
 		}
 		catch(RemoteException e3){
-			UserInterface.showError("There was a problem setting up server\n"+ e3.getStackTrace().toString());
+			UserInterface.showError("There was a problem setting up server\n"+ e3.getMessage());
 		}
 	}
 	

@@ -1,3 +1,11 @@
+/*
+* Parser
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package parser;
 
 import java.io.*;
@@ -7,7 +15,10 @@ import utilities.Log;
 import logic.*;
 import enums.SupportedProtocol;
 import gui.UserInterface;
-
+/**
+ * This class implements an ultra-simple parser. 
+ *
+ */
 public class Parser{
 	private  URL url;
 	public Parser(String address){

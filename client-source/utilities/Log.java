@@ -11,7 +11,12 @@ package utilities;
 import gui.UserInterface;
 
 import java.awt.Color;
-
+/**
+ * Simple log class : what happened, where, how does it feels.
+ * I left some commented filters of how i have used this class to debug the entire application.
+ * FLOW and CLONE are magic words to show logsin the user interface
+ *
+ */
 public class Log{
 	
 	public static void write(String what, String domain, String severity){

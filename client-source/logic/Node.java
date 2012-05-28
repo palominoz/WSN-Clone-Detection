@@ -32,16 +32,16 @@ import gui.UserInterface;
  * 
  * */
 abstract public class Node extends Thread{
-	
+
+/***CLASS MEMBERS***/
+/***INSTANCE MEMBERS***/
 	//The position is not intended to be modified.
 	private final Position position;
 	
 	//every node has a life represented by its energy.
 	double energyPool;
 	
-	public synchronized Position position(){
-		return position;
-	} 
+	public boolean nodeShouldStayActive=true;
 	
 	//an id for the node.Clones are spotted checking these ids.
 	NodeID nid;
@@ -49,80 +49,59 @@ abstract public class Node extends Thread{
 	//every node knows reachable nodes in their range.Must be sync externally.
 	public Vector<Node> neighbourhood;
 	
-	
 	//every node stores the ids they reiceve from other nodes and their position.
 	Vector<NodeInfo> storedNodes;
-	static int a = 0;
-	
-	class MessageBuffer{
-		//message buffer.
-		private Vector<Message> buffer=new Vector<Message>();
-		
-		MessageBuffer(){}
-		
-		
-		
-		public synchronized boolean recursiveLock(Iterator<Node> it){
-			a++;
-			Log.write(a + " locked" , "logic.Hypervisor", "SIMSTATUS");
-			if (it.hasNext()){
-				if (size() != 0){
-					return false;
-				}
-				else{
-					return it.next().buffer.recursiveLock(it);
-				}
-			}
-			else{
-				a = 0;
-				if (size()==0){
-					return true;
-				}
-				else return false;
-			}
-		}
-
-		public synchronized int size() throws NullPointerException{
-			if (buffer==null) throw new NullPointerException("Asked for size in a MessageBuffer which has null buffer.");
-			return buffer.size();
-		}
-		
-		public synchronized String bufferStatus(){
-			if (size()!=0){return new String("Node "+ nid + " Buffer: "+ size() + "\n");}
-			else return new String("Empty buffer.");
-		}
-		
-		public synchronized void pushBuffer(Message m) throws NullPointerException, BufferIsFull{
-			if (buffer.size()==Settings.bufferSize) throw new BufferIsFull("This node doesnt have enough space to reiceve messages.");
-			if (buffer==null) throw new NullPointerException("Tried to push a MessageBuffer which has null buffer");
-			buffer.add(m);
-			notifyAll();
-		}
-		
-		public synchronized Message popBuffer() throws NullPointerException, InterruptedException, NodeIsNotActive{
-			while(buffer.size()==0){
-				idle();
-				wait();
-				simulating();
-			}
-			if (nodeShouldStayActive==false) throw new NodeIsNotActive("This node must be killed.");
-			sleep(Settings.timeToWait);
-			return buffer.remove(0);
-		}
-		
-	}
-	
+	// each node has one buffer.
 	MessageBuffer buffer;
+	// prevents multiple notifications to the hypervisor
+	private boolean idle = false;
 	
+	// pause implementative
+	private Monitor monitor=new Monitor(false);
 	
+	//simulation stats
+	NodeStat stats;
+	/***CONSTRUCTORS***/
+	//create new node with position.
+		public Node(Position p) throws NidOverflow{
+			turnoff();
+			setDaemon(true);
+			nid=new NodeID();
+			position=p;
+			stats=new NodeStat();
+			neighbourhood=new Vector<Node>();
+			buffer=new MessageBuffer();
+			energyPool=Settings.defaultMaxEnergy;
+			storedNodes=new Vector<NodeInfo>();
+			Log.write("Node created", "logic.Node", "FINE");
+			setName(info().toString());
+		}
+		
+		//private implementation constructor to clone node.
+		protected Node(Position p, NodeID id){
+			turnoff();
+			setDaemon(true);
+			nid=id;
+			position=p;
+			stats=new NodeStat();
+			neighbourhood=new Vector<Node>();
+			buffer=new MessageBuffer();
+			energyPool=Settings.defaultMaxEnergy;
+			storedNodes=new Vector<NodeInfo>();
+			Log.write("Node created", "logic.Node", "FINE");
+			setName(info().toString());
+		}
+	/***CLASS METHODS***/
+	/***INSTANCE METHODS***/
+	
+	// notifies hypervisor about idle status
 	private void idle(){
 		if (idle == false){
 			Hypervisor.notifyIdle(this);
 			idle =true;
 		}
 	}
-	private boolean idle = false;
-	
+	// notifies hypervisor about simulating status
 	private void simulating(){
 		if (idle && nodeShouldStayActive){
 			Hypervisor.notifySimulating(this);
@@ -130,15 +109,15 @@ abstract public class Node extends Thread{
 		idle = false;
 	}
 	
-	//get wrapped node information
+	// get wrapped node information
 	public NodeInfo info(){
 		return new NodeInfo(this);
 	}
-	
+	// get string status about the buffer
 	public String bufferStatus(){
 		return buffer.bufferStatus();
 	}
-	
+	// get the size of the buffer
 	public int bufferSize(){
 		return buffer.size();
 	}
@@ -146,35 +125,7 @@ abstract public class Node extends Thread{
 	//creates and returns cloned node in a different position.
 	abstract public Node clonedNode(Position p);
 	
-	//create new node with position.
-	public Node(Position p) throws NidOverflow{
-		turnoff();
-		setDaemon(true);
-		nid=new NodeID();
-		position=p;
-		stats=new NodeStat();
-		neighbourhood=new Vector<Node>();
-		buffer=new MessageBuffer();
-		energyPool=Settings.defaultMaxEnergy;
-		storedNodes=new Vector<NodeInfo>();
-		Log.write("Node created", "logic.Node", "FINE");
-		setName(info().toString());
-	}
 	
-	//private implementation constructor to clone node.
-	protected Node(Position p, NodeID id){
-		turnoff();
-		setDaemon(true);
-		nid=id;
-		position=p;
-		stats=new NodeStat();
-		neighbourhood=new Vector<Node>();
-		buffer=new MessageBuffer();
-		energyPool=Settings.defaultMaxEnergy;
-		storedNodes=new Vector<NodeInfo>();
-		Log.write("Node created", "logic.Node", "FINE");
-		setName(info().toString());
-	}
 	
 	//any finishing job before transmitting should be here.
 	public final void sendMessage(Message m) throws BadNeighbour, NotEnoughEnergy{
@@ -205,6 +156,7 @@ abstract public class Node extends Thread{
 		
 	}
 	
+	// checks if this node is the destination of the control message
 	public boolean isLocalDestinationOf(ControlMessage message){
 		Double myDistance=Position.distance(position, message.local_destination);
 		synchronized (neighbourhood){
@@ -243,6 +195,7 @@ abstract public class Node extends Thread{
 		else throw new NoNeighboursAvailable("This node got a big big error.");
 	}
 	
+	// no implementation yet. just energy
 	protected void encodeSignature() throws NotEnoughEnergy{
 		useEnergy(Settings.signatureConsumption);
 	}
@@ -283,26 +236,11 @@ abstract public class Node extends Thread{
 		stats.consumed(e);
 	}
 	
-	/*
-	 * 
-	 * Nodeinfo is just a wrapper class to make the storage of the information of a node easier.
-	 * 
-	 * */
-	public class NodeInfo{
-		//copied members
-		public NodeID nid;
-		public Position position;
-		//one constructor
-		NodeInfo(Node n){
-			nid=n.nid;
-			position=n.position;
-		}
-		
-		public String toString(){
-			return nid+"@"+ position;
-		}
 	
-	}
+	// getter
+	public synchronized Position position(){
+		return position;
+	} 
 	
 	
 	//switch off node
@@ -328,11 +266,6 @@ abstract public class Node extends Thread{
 		}
 	}
 	
-	private Monitor monitor=new Monitor(false);
-	
-	//simulation stats
-	NodeStat stats;
-	
 	public NodeStat getStats(){
 		return stats;
 	}
@@ -344,7 +277,7 @@ abstract public class Node extends Thread{
 	}
 	
 	
-	public boolean nodeShouldStayActive=true;
+	
 	
 	/*
 	 * this function is core activity of the node.A node listens to incoming messages.When status changes to simulating a
@@ -391,12 +324,13 @@ abstract public class Node extends Thread{
 			Log.write("Node "+nid+" didnt find the sender of a message while trying to deconde signature", "logic.Node", "BUG");
 		} 
 		finally{
-			Log.write("Node "+nid+" has been turned off."+ (count++).toString(), "logic.Node", "LOW");
+			Log.write("Node "+nid+" has been turned off.", "logic.Node", "LOW");
 			idle();
 		}
 	}
-	static Integer count = 0;
 	
+	
+	// wakes up the node
 	public void wake(){
 		synchronized(buffer){
 			buffer.notifyAll();
@@ -421,6 +355,83 @@ abstract public class Node extends Thread{
 			Log.write("CHECKING NODE: id "+this.nid+ " pos:" +this.position+" WITH NODE: id"+ n.nid+ " pos: "+n.position+ " RESULT: "+ new Boolean(nid==n.nid && position==n.position).toString(), "logic.Node", "USELESS");
 		}
 		return nid.equals(n.nid) && position.equals(n.position);
+	}
+	
+	/**
+	 * A message buffer contains the messages of the node to manage. It handles concurrency between node threads.
+	 */
+	class MessageBuffer{
+		//message buffer.
+		private Vector<Message> buffer=new Vector<Message>();
+		
+		MessageBuffer(){}
+		
+		// lauched on the first node, ensures all the nodes present with the iterator have an empty buffer at the same time
+		public synchronized boolean recursiveLock(Iterator<Node> it){
+			if (it.hasNext()){
+				if (size() != 0){
+					return false;
+				}
+				else{
+					return it.next().buffer.recursiveLock(it);
+				}
+			}
+			else{
+				if (size()==0){
+					return true;
+				}
+				else return false;
+			}
+		}
+
+		public synchronized int size() throws NullPointerException{
+			if (buffer==null) throw new NullPointerException("Asked for size in a MessageBuffer which has null buffer.");
+			return buffer.size();
+		}
+		
+		public synchronized String bufferStatus(){
+			if (size()!=0){return new String("Node "+ nid + " Buffer: "+ size() + "\n");}
+			else return new String("Empty buffer.");
+		}
+		
+		public synchronized void pushBuffer(Message m) throws NullPointerException, BufferIsFull{
+			if (buffer.size()==Settings.bufferSize) throw new BufferIsFull("This node doesnt have enough space to reiceve messages.");
+			if (buffer==null) throw new NullPointerException("Tried to push a MessageBuffer which has null buffer");
+			buffer.add(m);
+			notifyAll();
+		}
+		
+		public synchronized Message popBuffer() throws NullPointerException, InterruptedException, NodeIsNotActive{
+			while(buffer.size()==0){
+				idle();
+				wait();
+				simulating();
+			}
+			if (nodeShouldStayActive==false) throw new NodeIsNotActive("This node must be killed.");
+			sleep(Settings.timeToWait);
+			return buffer.remove(0);
+		}
+		
+	}
+	
+	/** 
+	 * Nodeinfo is just a wrapper class to make the storage of the information of a node easier.
+	 * 
+	 * */
+	public class NodeInfo{
+		//copied members
+		public NodeID nid;
+		public Position position;
+		//one constructor
+		NodeInfo(Node n){
+			nid=n.nid;
+			position=n.position;
+		}
+		
+		public String toString(){
+			return nid+"@"+ position;
+		}
+	
 	}
 		
 }

@@ -11,6 +11,10 @@ import java.util.Iterator;
 import java.util.Vector;
 import exceptions.*;
 
+/**
+ * Records class for an entire simulation
+ *
+ */
 public class SimStat {
 	
 	public enum ValueType{

@@ -1,3 +1,12 @@
+/**
+* SettingsPanel
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
+
 package gui;
 
 import java.awt.BorderLayout;
@@ -21,6 +30,10 @@ import enums.SupportedProtocol;
 import logic.Hypervisor;
 import logic.Settings;
 
+/**
+ * This class provides a panel in which settings can be overridden.
+ * 
+ * */
 public class SettingsPanel extends JFrame implements ActionListener{
 	private static SettingsPanel singleton = null;
 	

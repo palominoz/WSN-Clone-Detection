@@ -1,3 +1,12 @@
+/**
+* URLPanel
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
+
 package gui;
 
 import java.awt.*;
@@ -16,7 +25,10 @@ import parser.*;
 
 import logic.Hypervisor;
 import logic.Settings;
-
+/**
+ * This class provides a panel in which the server or the configuration file url can be set.
+ * 
+ * */
 public class URLPanel extends JFrame implements ActionListener{
 	
 	private JLabel URLLabel;

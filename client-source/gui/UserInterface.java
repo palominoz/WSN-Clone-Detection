@@ -1,3 +1,11 @@
+/**
+* UserInterface
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package gui;
 
 import java.awt.Color;
@@ -12,6 +20,11 @@ import logic.Node;
 import logic.NodeID;
 import logic.Position;
 import messages.Message;
+
+/**
+ * This class is the facade pattern implementation. Acts as a bridge between logic classes and graphical classes. 
+ * It's method are highly representing the events occurring between the two worlds.
+ * */
 
 public class UserInterface {
 	

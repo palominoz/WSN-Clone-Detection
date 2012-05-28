@@ -1,4 +1,4 @@
-/*
+/**
 * Ambient
 * 
 * Zironda Andrea & Guerra Luca -- PCD 2011/2012
@@ -17,7 +17,6 @@ import javax.swing.JComboBox;
 
 import stats.NodeStat;
 import utilities.Log;
-import enums.SimulationSpeed;
 import exceptions.BufferIsFull;
 import exceptions.GraphicalNodeDoesntExists;
 import exceptions.MessageHasNotBeenSent;
@@ -30,12 +29,9 @@ import gui.ControlPanel;
 import gui.UserInterface;
 
 
-/*
- * 
+/**
  * This class is meant to preserve references to the nodes and apply operations through all of them (messages, threads).
  * It provides its functionalities offering a singleton interface and methods to reach objectives.
- * 
- * 
  * */
 
 public class Ambient {

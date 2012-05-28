@@ -26,7 +26,11 @@ import java.util.Vector;
 import exceptions.MessageHasNotBeenSent;
 import exceptions.NodeIsTooFar;
 import exceptions.NodeNotFound;
-
+/**
+ *  This class models the messages between nodes. it offers some basic functionality. Supposed to be subclassed
+ *  to specialize custom behaviours.
+ *
+ */
 abstract public class Message implements Cloneable{
 	
 	int id;

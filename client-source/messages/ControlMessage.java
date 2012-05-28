@@ -26,8 +26,8 @@ public class ControlMessage extends Message implements Cloneable{
 		return sender().info();
 	}
 	
-	//
-	public String type(){//reflection..
+	// could have used reflection. too late atm.
+	public String type(){
 		return "ControlMessage";
 	}
 	

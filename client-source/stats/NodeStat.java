@@ -8,6 +8,9 @@
 * */
 package stats;
 
+/**
+ * records stats for a single node
+ */
 public class NodeStat {
 	//class properties
 	int sent;

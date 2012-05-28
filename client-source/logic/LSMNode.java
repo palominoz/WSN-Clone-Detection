@@ -1,4 +1,4 @@
-/*
+/**
 * LSMNode
 * 
 * Zironda Andrea & Guerra Luca -- PCD 2011/2012
@@ -15,7 +15,9 @@ import exceptions.*;
 import java.util.Random;
 
 import utilities.Log;
-
+/**
+ * LSM protocol implementation for a node
+ */
 public class LSMNode extends Node {
 
 	

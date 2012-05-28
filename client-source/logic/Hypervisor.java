@@ -1,4 +1,4 @@
-/*
+/**
 * Hypervisor
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -28,11 +28,10 @@ import messages.Message;
 import commonInterface.*;
 import gui.AmbientPanel;
 import gui.ControlPanel;
-import gui.ResultsPanel;
 import gui.UserInterface;
 import parser.*;
 
-/*
+/**
  * This class is responsible for the managing of the simulation.It creates and starts the nodes as it is required in the
  * configuration file.
  * In order to work it other modules of the software must set up static variables of this class calling the setup method.
@@ -366,8 +365,6 @@ public class Hypervisor extends Thread{
 			Log.write("Error while connecting to RMI server..\n","logic.Hypervisor","CRITICAL");
 			e.printStackTrace();
 		}
-		
-		ResultsPanel.showStatistics(simulationStatistics);
 	}
 	
 	private void resetForNewSimulation(){

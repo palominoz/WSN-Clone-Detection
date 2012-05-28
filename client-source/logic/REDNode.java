@@ -17,8 +17,6 @@ import messages.Message;
 import exceptions.*;
 /*
  * Implementation of a sensor which works using the RED protocol.
- * 
- * 
  * */
 
 public class REDNode extends Node {

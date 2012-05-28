@@ -18,8 +18,8 @@ public class RmiServer{
 		String rmiObjName= "rmi://"+HOST+"/RemoteServer";
 		try{
 			//System.setSecurityManager(new java.rmi.RMISecurityManager());
-			//System.setProperty("java.security.policy", "rmi.policy");
-			//Registry registry = LocateRegistry.createRegistry(1099);
+			System.setProperty("java.security.policy", "rmi.policy");
+			Registry registry = LocateRegistry.createRegistry(1099);
 			//initialized remote object
 			ConcreteRemoteServer server=new ConcreteRemoteServer();
 			//remoteObj registered into rmi registry

@@ -1,3 +1,12 @@
+/*
+* RemoteServer
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
+
 package commonInterface;
 
 /*
@@ -13,7 +22,7 @@ import java.rmi.*;
 public interface RemoteServer extends Remote{
 	
 	/*
-	 * This methods will serialize and unmarshall automatically the string of the parameter.  
+	 * Pushes a string to the server.  
 	 */
 	public void push(String simulationStatistics) throws RemoteException; 
 	

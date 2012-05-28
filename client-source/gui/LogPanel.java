@@ -1,3 +1,11 @@
+/*
+* LogPanel
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package gui;
 
 import java.awt.Color;
@@ -11,6 +19,11 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+/*
+ * This class models a panel that logs strings. 
+ * 
+ * */
 
 public class LogPanel extends JFrame {
 	

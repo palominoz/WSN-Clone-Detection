@@ -59,7 +59,7 @@ public class Settings {
 		return false;
 	}
 	
-	static RemoteServer _server = null;
+	public static RemoteServer _server = null;
 	public static String server = "localhost";
 	
 	public static SupportedProtocol protocol=SupportedProtocol.NONE;

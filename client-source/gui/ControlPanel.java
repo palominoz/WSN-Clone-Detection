@@ -1,3 +1,11 @@
+/*
+* ControlPanel
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package gui;
 
 import java.awt.BorderLayout;
@@ -18,7 +26,13 @@ import javax.swing.JPanel;
 
 import logic.Settings;
 
+/*
+ * This class represents a panel in which the user can control the simulations. It has a number of buttons, checkboxes to
+ * fulfil the needs of the user.
+ * 
+ * */
 public class ControlPanel extends JFrame{
+/***SINGLETON IMPLEMENTATION***/
 	private static ControlPanel singleton=null;
 	
 	public static ControlPanel controlPanel(){
@@ -28,7 +42,9 @@ public class ControlPanel extends JFrame{
 		}
 		return singleton;
 	}
-	
+/***CLASS MEMBERS***/
+/***INSTANCE MEMBERS***/
+	// names tells you all
 	private JButton startButton = new JButton("Start");
 	private JButton nextButton = new JButton("Next");
 	private JButton stopButton =  new JButton("Stop");
@@ -50,7 +66,7 @@ public class ControlPanel extends JFrame{
 	public JCheckBox pauseWhenDetectingClone = new JCheckBox("Pause when detecting clone");
 	public JCheckBox pauseEverySimulation = new JCheckBox("Pause after each simulation");
 	public JCheckBox enableGraphics = new JCheckBox("Disable graphics (~ 10x faster performance)");
-	
+/***CONSTRUCTORS***/
 	ControlPanel(){
 		//init
 		super("Control Panel");
@@ -150,7 +166,7 @@ public class ControlPanel extends JFrame{
 		setSize(400,400);
 		setVisible(true);
 	}
-	
+/***CLASS METHODS***/
 	public static void notifyEndOfSimulation(Integer index) {
 		//controlPanel().pauseButton.setEnabled(false);
 		
@@ -207,4 +223,12 @@ public class ControlPanel extends JFrame{
 			controlPanel().nextButton.setEnabled(true);
 		}
 	}
+/***INSTANCE METHODS***/
+	
+	
+	
+	
+	
+	
+	
 }

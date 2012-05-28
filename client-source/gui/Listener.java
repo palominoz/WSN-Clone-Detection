@@ -1,3 +1,11 @@
+/*
+* Listener
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package gui;
 
 import java.awt.event.ActionEvent;
@@ -14,6 +22,11 @@ import logic.Ambient;
 import logic.Hypervisor;
 import logic.NodeID;
 import logic.Settings;
+
+/*
+ * This class listens to particular events from buttons and triggers consequent actions. 
+ * 
+ * */
 
 public class Listener implements ActionListener {
 

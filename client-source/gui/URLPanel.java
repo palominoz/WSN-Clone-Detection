@@ -9,6 +9,8 @@ import java.rmi.RemoteException;
 
 import javax.swing.*;
 
+import commonInterface.RemoteServer;
+
 import exceptions.WrongUrlPanel;
 import parser.*;
 
@@ -62,7 +64,8 @@ public class URLPanel extends JFrame implements ActionListener{
 				new Parser(URLTextField.getText());
 			}
 			if (type == "server"){
-				Naming.lookup("rmi://"+URLTextField.getText()+"/RemoteServer");
+				RemoteServer s= (RemoteServer)Naming.lookup("rmi://"+URLTextField.getText()+"/RemoteServer");
+				Settings._server = s;
 				Settings.server = URLTextField.getText();
 				ControlPanel.update();
 			}

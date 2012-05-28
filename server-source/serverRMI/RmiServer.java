@@ -1,5 +1,7 @@
 package serverRMI;
 
+import java.net.BindException;
+import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -13,7 +15,7 @@ public class RmiServer{
 	
 	public static void main(String[] args) throws Exception{
 		ServerPanel.setVisibity(true);
-		String rmiObjName= "rmi://"+HOST+"/RemoteServer";//address RemoteObj
+		String rmiObjName= "rmi://"+HOST+"/RemoteServer";
 		try{
 			//System.setSecurityManager(new java.rmi.RMISecurityManager());
 			System.setProperty("java.security.policy", "rmi.policy");
@@ -23,9 +25,12 @@ public class RmiServer{
 			//remoteObj registered into rmi registry
 			Naming.rebind(rmiObjName,server);
 		}
-		
-		catch(RemoteException e){e.printStackTrace();}
-		catch(Exception e){e.printStackTrace();}
+		catch(RemoteException e){
+			UserInterface.showError("There was a problem setting up server");
+		}
+		catch(MalformedURLException e2){
+			UserInterface.showError("There was a problem setting up server");
+		}
 	}
 	
 	

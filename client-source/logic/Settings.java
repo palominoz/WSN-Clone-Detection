@@ -9,12 +9,16 @@
 
 package logic;
 
+import java.net.MalformedURLException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
 import java.util.Vector;
 
 import utilities.Log;
 
 import enums.SupportedProtocol;
+import gui.UserInterface;
 
 
 /*
@@ -40,13 +44,17 @@ public class Settings {
 	}
 	
 	public static boolean serverIsValid(){
-		try{
+		try {
 			Naming.lookup("rmi://"+server+"/RemoteServer");
+			return true;
+		} catch (MalformedURLException e) {
+			UserInterface.showError("The server cannot be found because it's url is malformed");
+		} catch (RemoteException e) {
+			UserInterface.showError("The server does not respond");
+		} catch (NotBoundException e) {
+			UserInterface.showError("The server is not compatible with this version of the software");
 		}
-		catch (Exception e){
-			return false;
-		}
-		return true;
+		return false;
 	}
 	public static String server = "localhost";
 	

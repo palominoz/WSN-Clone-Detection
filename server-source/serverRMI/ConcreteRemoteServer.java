@@ -17,7 +17,7 @@ import gui.*;
  */
 public class ConcreteRemoteServer extends UnicastRemoteObject implements commonInterface.RemoteServer{
 	
-	public ConcreteRemoteServer() throws RemoteException {} //al momento l'ho laciato vuoto,da rivedere
+	public ConcreteRemoteServer() throws RemoteException {} 
 	
 	
 	

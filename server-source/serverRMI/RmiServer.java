@@ -25,10 +25,13 @@ public class RmiServer{
 			//remoteObj registered into rmi registry
 			Naming.rebind(rmiObjName,server);
 		}
-		catch(RemoteException e){
-			UserInterface.showError("There was a problem setting up server");
+		catch(AccessException e){
+			UserInterface.showError("No permission to start the server");
 		}
 		catch(MalformedURLException e2){
+			UserInterface.showError("There was a problem setting up server");
+		}
+		catch(RemoteException e3){
 			UserInterface.showError("There was a problem setting up server");
 		}
 	}

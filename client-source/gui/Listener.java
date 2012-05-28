@@ -46,7 +46,7 @@ public class Listener implements ActionListener {
 		}
 		if ("next".equals(e.getActionCommand())){
 			synchronized(Hypervisor.hypervisor()){
-				Hypervisor.hypervisor().notify();
+				Hypervisor.unpause();
 			}
 		}
 		if ("pause".equals(e.getActionCommand())){

@@ -138,16 +138,21 @@ public class Hypervisor extends Thread{
 			UserInterface.setIdleNode(simulatingNode);
 		}
 	}
-
+	
+	private static boolean loggedClone = false;
+	
+	private static boolean stopFlag = false;
+	
 	public static void notifyClone(Position p, Node detector){
-		Log.write("A clone was found", "logic.Hypervisor", "CLONE");
+		if (loggedClone == false) {
+			Log.write("A clone was found", "logic.Hypervisor", "CLONE");
+			loggedClone = true;
+		}
 		UserInterface.setClonedNode(p);
 		UserInterface.setDetectorNode(detector);
 		clones++;
-		if (stopsAfterDetectingClone){
-			Ambient.pause();
-			ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
-			ControlPanel.controlPanel().pauseButton.setText("Unpause");
+		if (stopsAfterDetectingClone) {
+			stopFlag = true;
 		}
 	}
 	
@@ -207,9 +212,19 @@ public class Hypervisor extends Thread{
 	
 	private void runSimulations(){
 		try {
+			
 			setup();
 			
 			for (currentSimulation=0;currentSimulation<Settings.numberOfSimulations;currentSimulation++){
+				
+				if (stopFlag){
+					Log.write("WWWWWW", "ads", "FLOW");
+					synchronized(monitor){
+						monitor.wait();
+					}
+					if (stopsAfterCompletingEverySimulation == false) stopFlag = false;
+				}
+				
 				prepareSimulation();
 				
 				StopWatch.start();
@@ -233,6 +248,7 @@ public class Hypervisor extends Thread{
 				
 				if (stopsAfterCompletingEverySimulation) {
 					pause();
+					synchronized(monitor) {monitor.wait();}
 					ControlPanel.controlPanel().pauseButton.setActionCommand("unpause");
 					ControlPanel.controlPanel().pauseButton.setText("Unpause");
 					ControlPanel.notifyPause();
@@ -360,6 +376,7 @@ public class Hypervisor extends Thread{
 			Ambient.clear();
 			System.gc();
 			clones = 0;
+			loggedClone = false;
 			idleNodes=0;
 			createNodes();
 		}

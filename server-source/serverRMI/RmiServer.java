@@ -29,10 +29,10 @@ public class RmiServer{
 			UserInterface.showError("No permission to start the server");
 		}
 		catch(MalformedURLException e2){
-			UserInterface.showError("There was a problem setting up server");
+			UserInterface.showError("There was a problem setting up server (malformed url)");
 		}
 		catch(RemoteException e3){
-			UserInterface.showError("There was a problem setting up server");
+			UserInterface.showError("There was a problem setting up server\n"+ e3.getStackTrace().toString());
 		}
 	}
 	

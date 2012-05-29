@@ -1,7 +1,17 @@
+/**
+* StopWatch
+* 
+* Zironda Andrea -- PCD 2011/2012
+* 
+* Wireless Sensor Networks - Clone Detection Simulator
+* 
+* */
 package utilities;
 
-import java.util.Timer;
-
+/**
+ *  Simple stopwatch to measure how does it take to do something.
+ *
+ */
 public class StopWatch {
 	
 	private static long startTime = 0;

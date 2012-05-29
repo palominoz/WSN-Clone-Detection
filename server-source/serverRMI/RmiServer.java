@@ -1,10 +1,8 @@
 package serverRMI;
 
-import java.net.BindException;
 import java.net.MalformedURLException;
 import java.rmi.*;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 import gui.*;
 
@@ -19,7 +17,7 @@ public class RmiServer{
 		try{
 			//System.setSecurityManager(new java.rmi.RMISecurityManager());
 			System.setProperty("java.security.policy", "rmi.policy");
-			Registry registry = LocateRegistry.createRegistry(1099);
+			LocateRegistry.createRegistry(1099);
 			//initialized remote object
 			ConcreteRemoteServer server=new ConcreteRemoteServer();
 			//remoteObj registered into rmi registry

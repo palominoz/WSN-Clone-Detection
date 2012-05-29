@@ -10,10 +10,8 @@ package utilities;
 
 
 /**
- * This class is responsible for the managing of the simulation.It creates and starts the nodes as it is required in the
- * configuration file.
- * In order to work it other modules of the software must set up static variables of this class calling the setup method.
- * This class approaches the problem with a singleton pattern and its methods are publicly available.
+ * A Monitor keeps track if something is paused. An object that can be paused will have one monitor as
+ * instance member and wait on it if it has to pause.
  * 
  * */
 public class Monitor {

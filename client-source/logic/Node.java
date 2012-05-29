@@ -1,7 +1,7 @@
-/*
+/**
 * Node
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea  -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -18,11 +18,10 @@ import messages.*;
 import stats.NodeStat;
 import utilities.Log;
 import utilities.Monitor;
-import enums.*;
 import gui.UserInterface;
 
 
-/*
+/**
  * Istances of this class simulate the behaviour of real WSN member nodes.
  * As the documentation provided said, the nodes know other nodes in range by default.It was not implemented any 
  * algorithm to reach that objective.Neighbourhood is updated when adding a node to the system.

@@ -2,9 +2,9 @@ package gui;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.util.*;
 
 
+@SuppressWarnings("serial")
 public class ServerPanel extends JFrame implements ActionListener{
 	
 	private static ServerPanel singleton=null;
@@ -30,8 +30,6 @@ public class ServerPanel extends JFrame implements ActionListener{
 	
 	private ServerPanel(){
 		super("Server Panel");
-		
-		JPanel layout=new JPanel();
 		
 		simulationsCombo.setActionCommand("selected");
 		//Container container=getContentPane();

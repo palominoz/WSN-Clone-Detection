@@ -1,4 +1,4 @@
-/*
+/**
 * RemoteServer
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -9,7 +9,7 @@
 
 package commonInterface;
 
-/*
+/**
  * The rmi interface should allow the client application to push a string representing the 
  * results of a single simulation. There comes a really simple interface with only one method 
  * to achieve the objective.

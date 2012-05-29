@@ -17,9 +17,7 @@ import utilities.Log;
 import exceptions.GraphicalNodeDoesntExists;
 import logic.Hypervisor;
 import logic.Node;
-import logic.NodeID;
 import logic.Position;
-import messages.Message;
 
 /**
  * This class is the facade pattern implementation. Acts as a bridge between logic classes and graphical classes. 
@@ -34,6 +32,7 @@ public class UserInterface {
 	private static boolean disabled = false;
 	
 	
+	@SuppressWarnings("unused")
 	private UserInterface userInterface(){
 		synchronized(singleton){
 			if (singleton==null) singleton=new UserInterface();
@@ -126,7 +125,7 @@ public class UserInterface {
 	
 	public static void wakeUI(){
 		ControlPanel.controlPanel();
-		LogPanel.logPanel().write("Graphical User Interface has been waked.", Color.orange);
+		LogPanel.write("Graphical User Interface has been waked.", Color.orange);
 	}
 	
 	public static void main(String args[]){
@@ -166,7 +165,6 @@ public class UserInterface {
 	}
 
 	public static void notifySentSimulation(int currentSimulation) {
-		// TODO Auto-generated method stub
 		
 	}
 	

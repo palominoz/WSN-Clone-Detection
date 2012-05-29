@@ -1,7 +1,7 @@
-/*
+/**
 * NodeFactory
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -12,7 +12,7 @@ import logic.LSMNode;
 import logic.REDNode;
 import exceptions.*;
 
-/*
+/**
  * 
  * Factory class to build different nodes switching proto enum.This class improves the code of other classes.
  * It would be a good idea to hide constructors in Node hierarcy.

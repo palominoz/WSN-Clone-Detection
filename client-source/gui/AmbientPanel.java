@@ -1,4 +1,4 @@
-/*
+/**
 * AmbientPanel
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -26,12 +26,13 @@ import logic.Position;
 import java.util.Iterator;
 import java.util.Vector;
 
-/*
+/**
  * This class manages external request for drawing purposes and contains an instance of AmbientDrawing. The repaint
  * is managed each time something changes within the method calls.
  * 
  * */
 
+@SuppressWarnings("serial")
 public class AmbientPanel extends JFrame{
 	
 	/*** SINGLETON IMPLEMENTATION ***/

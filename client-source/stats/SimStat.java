@@ -1,7 +1,7 @@
-/*
+/**
 * SimStat
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -12,7 +12,7 @@ import java.util.Vector;
 import exceptions.*;
 
 /**
- * Records class for an entire simulation
+ * Records the statistics of an entrie simulation.
  *
  */
 public class SimStat {

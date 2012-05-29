@@ -10,7 +10,6 @@ package logic;
 
 import exceptions.*;
 
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -21,15 +20,10 @@ import stats.SimStat;
 import utilities.Log;
 import utilities.Monitor;
 import utilities.StopWatch;
-import enums.*;
-import java.rmi.*;
 
-import messages.Message;
 import commonInterface.*;
-import gui.AmbientPanel;
 import gui.ControlPanel;
 import gui.UserInterface;
-import parser.*;
 
 /**
  * This class is responsible for the managing of the simulation.It creates and starts the nodes as it is required in the

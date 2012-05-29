@@ -1,7 +1,7 @@
 /**
 * LSMNode
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -30,10 +30,13 @@ public class LSMNode extends Node {
 	protected void manageMessage(Message m) throws MessageNotSupportedByNode, NullPointerException, NotEnoughEnergy, CloneHasBeenDetected, NodeNotFound{
 		Random generator=new Random();
 		try{
+			// if I receive a locationclaim
 			if (m.type()=="LocationClaim"){
+				// and I throw correctly
 				if (generator.nextDouble()<Settings.claimForwardProbability){
 					Log.write("LSM GOOD THROW "+ info().toString(), "logic.LSMNode", "VERBOSE");
 					Log.write("Node "+nid+" is forwarding a LC","logic.LSMNode","FINE");
+					// I forward g times to a random destination
 					for(int i=0;i<Settings.numberOfForwards;i++){
 						Position global=Position.random();
 						Position local=neighbourForDestination(global);
@@ -43,12 +46,14 @@ public class LSMNode extends Node {
 				}
 				else Log.write("LSM BAD THROW "+ info().toString(), "logic.LSMNode", "VERBOSE");
 			}
+			// if I receive a control message
 			else if(m.type()=="ControlMessage"){
 				ControlMessage cm=(ControlMessage)m;
+				// and i am the local destination
 				if (isLocalDestinationOf(cm)){
 					Log.write("Node "+nid+" is forwarding a CM","logic.LSMNode","FINE");
+					// i check for clones and forward it
 					decodeSignature(m.senderInfo());
-					/*TODO RIDARE ENERGIA COME DA DOCS, meglio alla fonte...su nodo*/
 					forwardMessage(cm);
 				}
 				else{

@@ -1,4 +1,4 @@
-/*
+/**
 * LogPanel
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -20,16 +20,15 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-/*
+/**
  * This class models a panel that logs strings. 
  * 
  * */
 
+@SuppressWarnings("serial")
 public class LogPanel extends JFrame {
 	
 	private static LogPanel singleton = null;
-	
-	private static String html = "<html>";
 	
 	public static LogPanel logPanel(){
 		if (singleton == null){

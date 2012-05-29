@@ -1,7 +1,7 @@
-/*
+/**
 * Position
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -17,14 +17,14 @@ import java.lang.String;
 import java.text.DecimalFormat;
 
 import utilities.Log;
-/*
+/**
  * 
  * This class provides an interface to indetify a point in 2D space.
  * It forecasts bounds to check wether a new position is valid. 
  * 
  * */
 
-@SuppressWarnings("unused")
+
 public class Position implements Cloneable{
 
 	

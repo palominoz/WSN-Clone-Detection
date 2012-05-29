@@ -3,7 +3,6 @@ package commonInterface;
 
 
 import java.rmi.*;
-import stats.*;
 
 //this interface is owned by client and server
 public interface RemoteServer extends Remote{

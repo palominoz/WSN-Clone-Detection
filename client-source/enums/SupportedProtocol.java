@@ -1,4 +1,4 @@
-/*
+/**
 * SupportedProtocol
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -8,7 +8,7 @@
 * */
 package enums;
 
-/*
+/**
  * An instance of this enum identifies one supported protocol
  * 
  * */

@@ -23,12 +23,12 @@ import commonInterface.RemoteServer;
 import exceptions.WrongUrlPanel;
 import parser.*;
 
-import logic.Hypervisor;
 import logic.Settings;
 /**
  * This class provides a panel in which the server or the configuration file url can be set.
  * 
  * */
+@SuppressWarnings("serial")
 public class URLPanel extends JFrame implements ActionListener{
 	
 	private JLabel URLLabel;

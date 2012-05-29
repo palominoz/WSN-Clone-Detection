@@ -1,7 +1,7 @@
-/*
+/**
 * ControlMessage
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -12,7 +12,12 @@ import exceptions.NodeNotFound;
 import logic.Position;
 import logic.Node.NodeInfo;
 import logic.Node;
-
+/**
+ *  ControlMessage is the message instantiated when a LocationClaim throws a successfull forward. It needs some
+ *  specialization as it has a global and local destination. Global destination never changes, local destination
+ *  is used to know which node is the correct receiver on each jump.
+ *
+ */
 
 public class ControlMessage extends Message implements Cloneable{
 	

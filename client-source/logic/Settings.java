@@ -17,7 +17,6 @@ import java.util.Vector;
 
 import commonInterface.RemoteServer;
 
-import utilities.Log;
 
 import enums.SupportedProtocol;
 import gui.UserInterface;

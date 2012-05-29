@@ -1,4 +1,4 @@
-/*
+/**
 * Listener
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -10,9 +10,6 @@ package gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
-
-import utilities.Log;
 
 import exceptions.GraphicalNodeDoesntExists;
 import exceptions.NodeNotFound;

@@ -10,7 +10,6 @@
 package gui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -22,18 +21,17 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import enums.SupportedProtocol;
 
-import logic.Hypervisor;
 import logic.Settings;
 
 /**
  * This class provides a panel in which settings can be overridden.
  * 
  * */
+@SuppressWarnings("serial")
 public class SettingsPanel extends JFrame implements ActionListener{
 	private static SettingsPanel singleton = null;
 	

@@ -1,7 +1,7 @@
-/*
+/**
 * Log
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -12,9 +12,10 @@ import gui.UserInterface;
 
 import java.awt.Color;
 /**
- * Simple log class : what happened, where, how does it feels.
+ * Simple log class: [what happened || where || how does it feels]
+ * 
  * I left some commented filters of how i have used this class to debug the entire application.
- * FLOW and CLONE are magic words to show logs in the user interface
+ * FLOW and CLONE are magic words to show logs in the user interface. Its simple to mantain and customize.
  *
  */
 public class Log{

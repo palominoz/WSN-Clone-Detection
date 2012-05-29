@@ -13,19 +13,16 @@ import java.util.Random;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.swing.JComboBox;
 
 import stats.NodeStat;
 import utilities.Log;
 import exceptions.BufferIsFull;
-import exceptions.GraphicalNodeDoesntExists;
 import exceptions.MessageHasNotBeenSent;
 import exceptions.NodeNotFound;
 import exceptions.NotEnoughEnergy;
 import exceptions.PositionNotAvailable;
 import messages.Message;
 import exceptions.*;
-import gui.ControlPanel;
 import gui.UserInterface;
 
 
@@ -239,16 +236,6 @@ public class Ambient {
 				if (Position.distance(current.position(), neighbour.position())>Settings.transmissionRange){
 					Log.write("Wrong neighbour! Node "+ neighbour.info() +" in Node "+current.info()+" neighbourhood!", "logic.Ambient", "CRITICAL");
 				}
-			}
-		}
-	}
-	
-	private static void printStatus(){
-		synchronized(ambient().nodes){
-			Iterator<Node> i=ambient().nodes.iterator();
-			while (i.hasNext()){
-				Node n=i.next();
-				Log.write("Node "+n.info().nid+ " is " +n.getState());
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-/*
+/**
 * AmbientDrawing
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -9,35 +9,27 @@
 
 package gui;
 
-import java.awt.BasicStroke;
+
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.Vector;
 
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
-import exceptions.CoordinateOutOfBounds;
-import exceptions.MessageHasNotBeenSent;
-import exceptions.NodeIsTooFar;
 
 import utilities.Log;
 
-import logic.Node;
 import logic.Position;
 import logic.Settings;
 
 import gui.AmbientPanel.GraphicalNode;
 import gui.AmbientPanel.GraphicalJump;
 
-/*
+/**
  * This class models instances of a drawable field. The repaint mechanism is not implemented with a thread that timely 
  * refreshes the drawing. An instance of this class should be included in some other wrapper/container in order to be 
  * controlled properly. 

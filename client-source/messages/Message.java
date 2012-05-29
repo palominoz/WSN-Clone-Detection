@@ -1,34 +1,22 @@
-/*
+/**
 * Message
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
 * */
 package messages;
 import utilities.Log;
-import logic.Hypervisor;
 import logic.Node;
 import logic.Node.NodeInfo;
-import logic.Settings;
-import logic.Position;
-
-import java.util.Iterator;
-import java.util.Vector;
-/*
- * 
- * Message is the base class of messages and used to guarantee basic messaging services between nodes.
- * 
- * 
- * */
-
-import exceptions.MessageHasNotBeenSent;
-import exceptions.NodeIsTooFar;
 import exceptions.NodeNotFound;
+
 /**
- *  This class models the messages between nodes. it offers some basic functionality. Supposed to be subclassed
- *  to specialize custom behaviours.
+ *  This class models the messages between nodes. It guarantees a basic messaging service between nodes. 
+ *  Supposed to be subclassed to specialize custom behaviours. 
+ *  It implements the Cloneable interface because every message is splitted to all of the neighbours each time it jumps 
+ *  from a node to another.
  *
  */
 abstract public class Message implements Cloneable{

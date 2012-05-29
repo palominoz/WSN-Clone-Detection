@@ -1,4 +1,4 @@
-/*
+/**
 * ControlPanel
 * 
 * Zironda Andrea -- PCD 2011/2012
@@ -11,26 +11,23 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import logic.Settings;
 
-/*
+/**
  * This class represents a panel in which the user can control the simulations. It has a number of buttons, checkboxes to
  * fulfil the needs of the user.
  * 
  * */
+@SuppressWarnings("serial")
 public class ControlPanel extends JFrame{
 /***SINGLETON IMPLEMENTATION***/
 	private static ControlPanel singleton=null;

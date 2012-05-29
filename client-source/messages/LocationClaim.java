@@ -1,7 +1,7 @@
-/*
+/**
 * LocationClaim
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks - Clone Detection Simulator
 * 
@@ -12,6 +12,11 @@ import messages.Message;
 import logic.Node;
 import logic.Node.NodeInfo;
 
+/**
+ *  LocationClaim subclasses message. In this implementation of the simulator, there is no need to do nothing more.
+ *  
+ *
+ */
 
 public class LocationClaim extends Message implements Cloneable {
 

@@ -1,7 +1,7 @@
-/*
+/**
 * NodeID
 * 
-* Zironda Andrea & Guerra Luca -- PCD 2011/2012
+* Zironda Andrea -- PCD 2011/2012
 * 
 * Wireless Sensor Networks -Clone-Detection Simulator
 * 
@@ -12,7 +12,7 @@ package logic;
 
 import exceptions.*;
 
-/*
+/**
  * 
  * This class permits automatic generation of new NodeIDs avoiding the user of the class Node in doing it.
  * Considering the purpose of the simulation it must be possible to use different IDs.It is possible to bypass 

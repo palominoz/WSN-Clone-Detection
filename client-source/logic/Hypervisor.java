@@ -325,7 +325,12 @@ public class Hypervisor extends Thread{
 			server.push(format.format(stats.average(SimStat.ValueType.STORED))+" ");
 			server.push(format.format(stats.standardDeviation(SimStat.ValueType.STORED))+" ");
 			
-			server.push(new Boolean(stats.cloneWasFound()).toString());
+			if (stats.cloneWasFound()){
+				server.push("1");
+			}
+			else{
+				server.push("0");
+			}
 			
 			server.push("\n");
 			

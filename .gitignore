@@ -1,5 +1,8 @@
 server-source/output.txt
 
+server-bin
+client-bin
+
 *.LOCAL.*
 *.BASE.*
 *.orig

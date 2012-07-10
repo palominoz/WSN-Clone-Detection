@@ -1,0 +1,13 @@
+apply plugin: 'java'
+
+uploadArchives {
+    repositories {
+        ivy {
+            credentials {
+                username "admin"
+                password "admin123"
+            }
+            url "http://casa:8081/nexus/content/repositories/releases/"
+        }
+    }
+}

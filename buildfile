@@ -8,9 +8,14 @@ GROUP = "WSN-Clone-Detection"
 COPYRIGHT = ""
 
 # Specify Maven 2.0 remote repositories here, like this:
-repositories.remote << "http://repo1.maven.org/maven2"
+repositories.remote << "http://78.6.114.244:8081/nexus/content/repositories/releases/"
+
+repositories.release_to[:url] = "http://78.6.114.244:8081/nexus/content/repositories/releases/"
+repositories.release_to[:username] = "admin"
+repositories.release_to[:password] = "admin123"
 
 desc "The Wsn-clone-detection project"
+
 define "WSN-Clone-Detection" do
 
   project.version = VERSION_NUMBER
